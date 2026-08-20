@@ -70,6 +70,9 @@ web_modules/
 # Optional REPL history
 .node_repl_history
 
+a.cjs
+allcode.txt
+
 # Output of 'npm pack'
 *.tgz
 
