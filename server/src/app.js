@@ -1,10 +1,13 @@
 import express from "express";
+import helmet from "helmet";
 import morgan from "morgan";
 
 import { globalErrorHandler } from "./shared/utils/errorHandler.js";
 import authRouter from "./modules/auth/auth.routes.js";
 
 const app = express();
+
+app.use(helmet());
 
 app.use(morgan("dev"));
 
