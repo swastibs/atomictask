@@ -1,4 +1,4 @@
-import { nodeEnv } from "../../config/envConfig.js";
+import { nodeEnv } from "../config/envConfig.js";
 
 export const successResponse = (res, options = {}) => {
   const {
@@ -16,7 +16,6 @@ export const successResponse = (res, options = {}) => {
 
   if (data !== null && data !== undefined) response.data = data;
 
-  // 🔍 Log success response only in development
   if (nodeEnv === "development") {
     console.log("----- SUCCESS RESPONSE -----");
     console.log(JSON.stringify(response, null, 2));
@@ -32,16 +31,6 @@ export const errorResponse = (res, statusCode, message, errors = null) => {
   };
   if (errors) response.errors = errors;
 
-  // You may also want to log errors only in development,
-  // or keep error logs in all environments (recommended).
-  // Uncomment the condition if you want the same behavior.
-  //
-  // if (nodeEnv === "development") {
-  //   console.log("----- ERROR RESPONSE -----");
-  //   console.log(JSON.stringify(response, null, 2));
-  // }
-
-  // For now, error logs remain always visible (as before)
   console.log("----- ERROR RESPONSE -----");
   console.log(JSON.stringify(response, null, 2));
 

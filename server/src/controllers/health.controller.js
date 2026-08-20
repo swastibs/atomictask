@@ -1,4 +1,4 @@
-import { successResponse } from "../../shared/utils/response.js";
+import { successResponse } from "../utils/response.js";
 
 export const getHealth = (req, res) => {
   const totalSeconds = process.uptime();

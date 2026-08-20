@@ -4,7 +4,9 @@ import { mongoURI } from "./envConfig.js";
 
 const connectDB = async () => {
   if (!mongoURI) {
-    console.error(chalk.red("MONGO_URI is not defined in environment variables"));
+    console.error(
+      chalk.red("MONGO_URI is not defined in environment variables"),
+    );
     process.exit(1);
   }
 
