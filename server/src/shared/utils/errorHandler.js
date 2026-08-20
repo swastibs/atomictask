@@ -1,8 +1,21 @@
+import { ValidationError } from "express-validation";
 import ApiError from "../errors/ApiError.js";
 import { errorResponse } from "./response.js";
 
 export const globalErrorHandler = (err, req, res, next) => {
   console.error("ERROR:", err);
+
+  if (err instanceof ValidationError) {
+    const allMessages = Object.values(err.details || {})
+      .flat()
+      .map((e) => e.message);
+
+    const message = allMessages.length
+      ? allMessages.join(", ")
+      : "Validation failed";
+
+    return errorResponse(res, 400, message, err.details);
+  }
 
   if (err.type === "entity.parse.failed") {
     return errorResponse(res, 400, "Invalid JSON payload");
