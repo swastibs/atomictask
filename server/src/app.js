@@ -2,6 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import passport from "./config/passport.js";
+import "./config/redis.js";
 
 import { globalErrorHandler } from "./utils/errorHandler.js";
 import apiRouter from "./routes/index.routes.js";

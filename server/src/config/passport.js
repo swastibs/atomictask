@@ -3,8 +3,9 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import User from "../models/user.model.js";
 import { jwtSecret } from "./envConfig.js";
 
-if (!jwtSecret)
+if (!jwtSecret) {
   throw new Error("JWT_SECRET is not defined in environment variables");
+}
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,7 +22,9 @@ passport.use(
         isActive: true,
       });
 
-      if (!user) return done(null, false);
+      if (!user) {
+        return done(null, false);
+      }
 
       const sanitizedUser = {
         id: user._id,
