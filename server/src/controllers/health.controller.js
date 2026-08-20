@@ -19,11 +19,21 @@ export const getHealth = (req, res) => {
   const seconds = Math.floor(remaining % 60);
 
   const parts = [];
-  if (years > 0) parts.push(`${years}y`);
-  if (months > 0) parts.push(`${months}m`);
-  if (days > 0) parts.push(`${days}d`);
-  if (hours > 0) parts.push(`${hours}h`);
-  if (minutes > 0) parts.push(`${minutes}m`);
+  if (years > 0) {
+    parts.push(`${years}y`);
+  }
+  if (months > 0) {
+    parts.push(`${months}m`);
+  }
+  if (days > 0) {
+    parts.push(`${days}d`);
+  }
+  if (hours > 0) {
+    parts.push(`${hours}h`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes}m`);
+  }
   parts.push(`${seconds}s`);
 
   const uptimeString = parts.join(", ");

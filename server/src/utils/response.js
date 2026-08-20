@@ -31,8 +31,10 @@ export const errorResponse = (res, statusCode, message, errors = null) => {
   };
   if (errors) response.errors = errors;
 
-  console.log("----- ERROR RESPONSE -----");
-  console.log(JSON.stringify(response, null, 2));
+  if (nodeEnv === "development") {
+    console.log("----- ERROR RESPONSE -----");
+    console.log(JSON.stringify(response, null, 2));
+  }
 
   return res.status(statusCode).json(response);
 };

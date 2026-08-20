@@ -50,3 +50,27 @@ export const loginSchema = {
   params: Joi.object().max(0),
   query: Joi.object().max(0),
 };
+
+export const updatePasswordSchema = {
+  body: Joi.object({
+    currentPassword: Joi.string().trim().required().messages({
+      "any.required": "Current password is required",
+      "string.empty": "Current password is required",
+    }),
+    newPassword: password.required().messages({
+      "any.required": "New password is required",
+      "string.empty": "New password is required",
+    }),
+    confirmNewPassword: Joi.string()
+      .valid(Joi.ref("newPassword"))
+      .required()
+      .messages({
+        "any.required": "Confirm new password is required",
+        "string.empty": "Confirm new password is required",
+        "any.only": "Passwords do not match",
+      }),
+  }).unknown(false),
+
+  params: Joi.object().max(0),
+  query: Joi.object().max(0),
+};
