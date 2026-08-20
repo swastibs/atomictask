@@ -2,7 +2,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
-import { globalErrorHandler } from "./shared/utils/errorHandler.js";
+import { globalErrorHandler } from "./utils/errorHandler.js";
 import apiRouter from "./routes/api.routes.js";
 
 const app = express();

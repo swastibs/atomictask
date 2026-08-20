@@ -34,3 +34,19 @@ export const signUpSchema = {
   params: Joi.object().max(0),
   query: Joi.object().max(0),
 };
+
+export const loginSchema = {
+  body: Joi.object({
+    email: email.required().messages({
+      "any.required": "Email is required",
+      "string.empty": "Email is required",
+    }),
+    password: password.required().messages({
+      "any.required": "Password is required",
+      "string.empty": "Password is required",
+    }),
+  }).unknown(false),
+
+  params: Joi.object().max(0),
+  query: Joi.object().max(0),
+};
