@@ -12,7 +12,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <nav className="bg-white shadow-sm border-b px-6 py-3 flex items-center justify-between">
+      <nav className="bg-card text-card-foreground shadow-sm border-b px-6 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <Link to="/dashboard" className="font-bold text-lg">
             AtomicTask
@@ -30,7 +30,7 @@ export default function Layout() {
           )}
         </div>
         <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             {user?.name || user?.email}
           </span>
           <button

@@ -8,7 +8,7 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold">
         Welcome, {user?.name || user?.email}!
       </h1>
-      <p className="text-gray-600">Role: {user?.role}</p>
+      <p className="text-muted-foreground">Role: {user?.role}</p>
     </div>
   );
 }
