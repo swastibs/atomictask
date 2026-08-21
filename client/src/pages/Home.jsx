@@ -13,10 +13,15 @@ import {
   AlertCircle,
   Zap,
 } from "lucide-react";
+
 import ThemeToggle from "@/components/ThemeToggle";
 import CursorGrid from "@/components/CursorGrid/CursorGrid";
+import HabitTrackerModule from "@/components/HabitTrackerModule/HabitTrackerModule";
 
-// ---- Background decorative layer (unchanged) ----
+// ============================================================
+// Background decorative layer
+// ============================================================
+
 function BackgroundDecor({ viewMode }) {
   const isBefore = viewMode === "before";
 
@@ -43,22 +48,48 @@ function BackgroundDecor({ viewMode }) {
     { x: 10, y: 90, size: 16, rot: 160 },
   ];
 
+  const dots = [
+    { x: 8, y: 12, size: 3, hue: 15, duration: 6 },
+    { x: 22, y: 28, size: 4, hue: 72, duration: 8 },
+    { x: 38, y: 16, size: 2, hue: 130, duration: 5 },
+    { x: 54, y: 34, size: 4, hue: 185, duration: 9 },
+    { x: 67, y: 12, size: 3, hue: 230, duration: 7 },
+    { x: 83, y: 24, size: 4, hue: 275, duration: 8 },
+    { x: 94, y: 42, size: 3, hue: 320, duration: 6 },
+    { x: 14, y: 48, size: 2, hue: 45, duration: 9 },
+    { x: 31, y: 58, size: 4, hue: 95, duration: 7 },
+    { x: 49, y: 52, size: 3, hue: 150, duration: 6 },
+    { x: 63, y: 68, size: 4, hue: 205, duration: 8 },
+    { x: 79, y: 55, size: 2, hue: 255, duration: 9 },
+    { x: 91, y: 73, size: 4, hue: 300, duration: 7 },
+    { x: 18, y: 76, size: 3, hue: 35, duration: 6 },
+    { x: 36, y: 85, size: 4, hue: 85, duration: 8 },
+    { x: 52, y: 92, size: 2, hue: 140, duration: 7 },
+    { x: 71, y: 84, size: 3, hue: 195, duration: 9 },
+    { x: 88, y: 93, size: 4, hue: 245, duration: 6 },
+    { x: 5, y: 65, size: 3, hue: 290, duration: 8 },
+    { x: 44, y: 42, size: 2, hue: 340, duration: 7 },
+  ];
+
   return (
     <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
       <div className="absolute inset-0 transition-all duration-1000">
-        {shapes.map((s, i) => {
-          const size = isBefore ? s.size : s.size * 0.4;
-          const opacity = isBefore ? 0.6 + Math.random() * 0.4 : 0.15;
+        {shapes.map((shape, index) => {
+          const size = isBefore ? shape.size : shape.size * 0.4;
+          const opacity = isBefore ? 0.75 : 0.15;
           const blur = isBefore ? "0px" : "2px";
+
           const color = isBefore
-            ? `hsl(${i * 18 + 20}, 80%, 60%)`
+            ? `hsl(${index * 18 + 20}, 80%, 60%)`
             : "var(--muted-foreground)";
+
           const transform = isBefore
-            ? `translate(${s.x}%, ${s.y}%) rotate(${s.rot}deg) scale(1)`
-            : `translate(${s.x}%, ${s.y}%) rotate(0deg) scale(0.8)`;
+            ? `translate(${shape.x}%, ${shape.y}%) rotate(${shape.rot}deg) scale(1)`
+            : `translate(${shape.x}%, ${shape.y}%) rotate(0deg) scale(0.8)`;
+
           return (
             <div
-              key={i}
+              key={index}
               className="absolute rounded-full transition-all duration-1000 ease-in-out"
               style={{
                 width: size,
@@ -66,10 +97,12 @@ function BackgroundDecor({ viewMode }) {
                 left: 0,
                 top: 0,
                 background: color,
-                transform: transform,
-                opacity: opacity,
+                transform,
+                opacity,
                 filter: `blur(${blur})`,
-                animation: `float-${i % 5} ${6 + (i % 7)}s ease-in-out infinite alternate`,
+                animation: `float-${index % 5} ${
+                  6 + (index % 7)
+                }s ease-in-out infinite alternate`,
               }}
             />
           );
@@ -78,9 +111,11 @@ function BackgroundDecor({ viewMode }) {
 
       <div
         className="absolute inset-0 transition-opacity duration-1000"
-        style={{ opacity: isBefore ? 0.6 : 0.1 }}
+        style={{
+          opacity: isBefore ? 0.6 : 0.1,
+        }}
       >
-        <svg className="w-full h-full">
+        <svg className="h-full w-full">
           <defs>
             <pattern
               id="grid-pattern"
@@ -97,24 +132,25 @@ function BackgroundDecor({ viewMode }) {
               />
             </pattern>
           </defs>
+
           <rect width="100%" height="100%" fill="url(#grid-pattern)" />
         </svg>
       </div>
 
       {isBefore && (
         <div className="absolute inset-0">
-          {[...Array(40)].map((_, i) => (
+          {dots.map((dot, index) => (
             <div
-              key={`dot-${i}`}
+              key={`dot-${index}`}
               className="absolute rounded-full"
               style={{
-                width: 2 + Math.random() * 4,
-                height: 2 + Math.random() * 4,
-                left: Math.random() * 100 + "%",
-                top: Math.random() * 100 + "%",
-                background: `hsl(${Math.random() * 360}, 60%, 50%)`,
-                opacity: 0.3 + Math.random() * 0.3,
-                animation: `dot-float ${4 + Math.random() * 8}s ease-in-out infinite alternate`,
+                width: dot.size,
+                height: dot.size,
+                left: `${dot.x}%`,
+                top: `${dot.y}%`,
+                background: `hsl(${dot.hue}, 60%, 50%)`,
+                opacity: 0.45,
+                animation: `dot-float ${dot.duration}s ease-in-out infinite alternate`,
               }}
             />
           ))}
@@ -122,18 +158,105 @@ function BackgroundDecor({ viewMode }) {
       )}
 
       <style>{`
-        @keyframes float-0 { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(20px, -30px) rotate(30deg); } }
-        @keyframes float-1 { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-25px, 15px) rotate(-20deg); } }
-        @keyframes float-2 { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(30px, 20px) rotate(45deg); } }
-        @keyframes float-3 { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-15px, -35px) rotate(-15deg); } }
-        @keyframes float-4 { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(10px, 40px) rotate(60deg); } }
-        @keyframes dot-float { 0% { transform: translate(0, 0); } 100% { transform: translate(15px, -20px); } }
+        @keyframes float-0 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+
+          100% {
+            transform: translate(20px, -30px) rotate(30deg);
+          }
+        }
+
+        @keyframes float-1 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+
+          100% {
+            transform: translate(-25px, 15px) rotate(-20deg);
+          }
+        }
+
+        @keyframes float-2 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+
+          100% {
+            transform: translate(30px, 20px) rotate(45deg);
+          }
+        }
+
+        @keyframes float-3 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+
+          100% {
+            transform: translate(-15px, -35px) rotate(-15deg);
+          }
+        }
+
+        @keyframes float-4 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+
+          100% {
+            transform: translate(10px, 40px) rotate(60deg);
+          }
+        }
+
+        @keyframes dot-float {
+          0% {
+            transform: translate(0, 0);
+          }
+
+          100% {
+            transform: translate(15px, -20px);
+          }
+        }
+
+        @keyframes orbit-spin {
+          from {
+            transform: rotate(0deg);
+          }
+
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes orbit-counter-spin {
+          from {
+            transform: translateX(-50%) translateY(-50%) rotate(0deg);
+          }
+
+          to {
+            transform: translateX(-50%) translateY(-50%) rotate(-360deg);
+          }
+        }
+
+        @keyframes atomic-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+
+          50% {
+            transform: scale(1.08);
+          }
+        }
       `}</style>
     </div>
   );
 }
 
-// ---- AtomMark (logo) ----
+// ============================================================
+// AtomMark
+// ============================================================
+
 function AtomMark({ className = "" }) {
   return (
     <svg
@@ -150,6 +273,7 @@ function AtomMark({ className = "" }) {
         stroke="currentColor"
         strokeWidth="1.4"
       />
+
       <ellipse
         cx="12"
         cy="12"
@@ -159,6 +283,7 @@ function AtomMark({ className = "" }) {
         strokeWidth="1.4"
         transform="rotate(60 12 12)"
       />
+
       <ellipse
         cx="12"
         cy="12"
@@ -168,12 +293,16 @@ function AtomMark({ className = "" }) {
         strokeWidth="1.4"
         transform="rotate(120 12 12)"
       />
+
       <circle cx="12" cy="12" r="2.4" fill="var(--accent-atomic)" />
     </svg>
   );
 }
 
-// ---- Orbit ring helper ----
+// ============================================================
+// Orbit ring
+// ============================================================
+
 function OrbitRing({ size, duration, reverse, icon: Icon }) {
   return (
     <div
@@ -198,7 +327,10 @@ function OrbitRing({ size, duration, reverse, icon: Icon }) {
   );
 }
 
-// ---- Orbit diagram (hero) ----
+// ============================================================
+// Orbit diagram
+// ============================================================
+
 function OrbitDiagram() {
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[300px] sm:max-w-[380px]">
@@ -209,6 +341,7 @@ function OrbitDiagram() {
             "color-mix(in oklch, var(--accent-atomic) 22%, transparent)",
         }}
       />
+
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="flex size-20 items-center justify-center rounded-full sm:size-24"
@@ -228,7 +361,10 @@ function OrbitDiagram() {
   );
 }
 
-// ---- Steps data ----
+// ============================================================
+// Steps
+// ============================================================
+
 const steps = [
   {
     title: "Capture it",
@@ -250,89 +386,430 @@ const steps = [
   },
 ];
 
-// ---- Main Home component ----
+// ============================================================
+// Tasks
+// ============================================================
+
+const beforeTasks = [
+  {
+    id: 1,
+    label: "Write report for Q3",
+    priority: "high",
+    done: false,
+    due: "Overdue",
+  },
+  {
+    id: 2,
+    label: "Buy groceries",
+    priority: "low",
+    done: false,
+    due: "Tomorrow",
+  },
+  {
+    id: 3,
+    label: "Clean inbox",
+    priority: "medium",
+    done: false,
+    due: "Today",
+  },
+  {
+    id: 4,
+    label: "Call mom",
+    priority: "high",
+    done: false,
+    due: "Yesterday",
+  },
+  {
+    id: 5,
+    label: "Review budget",
+    priority: "low",
+    done: false,
+    due: "Next week",
+  },
+  {
+    id: 6,
+    label: "Plan vacation",
+    priority: "medium",
+    done: false,
+    due: "Someday",
+  },
+];
+
+const afterTasks = [
+  {
+    id: 1,
+    label: "Draft investor update",
+    priority: "high",
+    done: true,
+  },
+  {
+    id: 2,
+    label: "Review PR #142",
+    priority: "medium",
+    done: true,
+  },
+  {
+    id: 3,
+    label: "Outline onboarding flow",
+    priority: "high",
+    done: true,
+  },
+  {
+    id: 4,
+    label: "Call Sarah re: pricing",
+    priority: "medium",
+    done: true,
+  },
+  {
+    id: 5,
+    label: "Write changelog entry",
+    priority: "low",
+    done: false,
+  },
+  {
+    id: 6,
+    label: "Plan next sprint",
+    priority: "medium",
+    done: false,
+  },
+];
+
+// ============================================================
+// Before / After habits
+// ============================================================
+
+const beforeHabits = [
+  {
+    name: "Exercise",
+    streak: 1,
+    total: 12,
+  },
+  {
+    name: "Read",
+    streak: 0,
+    total: 5,
+  },
+  {
+    name: "Meditate",
+    streak: 2,
+    total: 8,
+  },
+  {
+    name: "Journal",
+    streak: 0,
+    total: 3,
+  },
+];
+
+const afterHabits = [
+  {
+    name: "Exercise",
+    streak: 18,
+    total: 20,
+  },
+  {
+    name: "Read",
+    streak: 12,
+    total: 12,
+  },
+  {
+    name: "Meditate",
+    streak: 9,
+    total: 10,
+  },
+  {
+    name: "Journal",
+    streak: 7,
+    total: 8,
+  },
+];
+
+const beforeHeatmap = [
+  0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+  0, 0,
+].map(Boolean);
+
+const afterHeatmap = new Array(28).fill(true);
+
+// ============================================================
+// Interactive before / after demo
+// ============================================================
+
+function InteractiveDemo({ viewMode }) {
+  const isBefore = viewMode === "before";
+
+  const [tasks, setTasks] = useState(isBefore ? beforeTasks : afterTasks);
+
+  const habits = isBefore ? beforeHabits : afterHabits;
+
+  const heatmap = isBefore ? beforeHeatmap : afterHeatmap;
+
+  const [interactiveTasks, setInteractiveTasks] = useState(
+    isBefore ? beforeTasks : afterTasks,
+  );
+
+  const toggleTask = (id) => {
+    if (isBefore) {
+      return;
+    }
+
+    setInteractiveTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              done: !task.done,
+            }
+          : task,
+      ),
+    );
+  };
+
+  const visibleTasks = isBefore ? tasks : interactiveTasks;
+
+  const totalDone = visibleTasks.filter((task) => task.done).length;
+
+  const totalTasks = visibleTasks.length;
+
+  const completion =
+    totalTasks > 0 ? Math.round((totalDone / totalTasks) * 100) : 0;
+
+  const activeStreaks = habits.filter((habit) => habit.streak > 0).length;
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-lg transition-all duration-500 ease-in-out">
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Tasks */}
+        <div>
+          <div className="flex items-center justify-between border-b border-border/70 pb-3">
+            <span className="text-sm font-semibold">
+              {isBefore ? "Cluttered tasks" : "Today's priorities"}
+            </span>
+
+            <span className="text-xs text-muted-foreground">
+              {completion}% done
+            </span>
+          </div>
+
+          <ul className="mt-4 space-y-2.5">
+            {visibleTasks.map((task) => {
+              const isOverdue =
+                task.due === "Overdue" || task.due === "Yesterday";
+
+              return (
+                <li
+                  key={task.id}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                    isBefore
+                      ? "bg-muted/30 hover:bg-muted/50"
+                      : "hover:bg-muted/30"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleTask(task.id)}
+                    className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                      task.done ? "border-transparent" : "border-border"
+                    }`}
+                    style={
+                      task.done
+                        ? {
+                            background: "var(--accent-atomic)",
+                          }
+                        : undefined
+                    }
+                    disabled={isBefore}
+                    aria-label={
+                      task.done ? "Mark as incomplete" : "Mark as complete"
+                    }
+                  >
+                    {task.done && (
+                      <Check
+                        className="size-3"
+                        style={{
+                          color: "var(--accent-atomic-foreground)",
+                        }}
+                      />
+                    )}
+                  </button>
+
+                  <span
+                    className={`flex-1 ${
+                      task.done ? "text-muted-foreground line-through" : ""
+                    } ${
+                      isBefore && !task.done && isOverdue
+                        ? "text-destructive"
+                        : ""
+                    }`}
+                  >
+                    {task.label}
+                  </span>
+
+                  {isBefore && !task.done && (
+                    <span
+                      className={`text-[10px] font-medium ${
+                        isOverdue ? "text-destructive" : "text-muted-foreground"
+                      }`}
+                    >
+                      {task.due}
+                    </span>
+                  )}
+
+                  {!isBefore && !task.done && (
+                    <span
+                      className="text-[10px] font-medium"
+                      style={{
+                        color:
+                          task.priority === "high"
+                            ? "var(--accent-atomic)"
+                            : "var(--muted-foreground)",
+                      }}
+                    >
+                      {task.priority}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          {isBefore && (
+            <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <AlertCircle className="size-3.5" />
+
+              <span>3 tasks overdue — stress building up</span>
+            </p>
+          )}
+
+          {!isBefore && (
+            <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Zap
+                className="size-3.5"
+                style={{
+                  color: "var(--accent-atomic)",
+                }}
+              />
+
+              <span>Click a task to update completion</span>
+            </p>
+          )}
+        </div>
+
+        {/* Habits */}
+        <div>
+          <div className="flex items-center justify-between border-b border-border/70 pb-3">
+            <span className="text-sm font-semibold">
+              {isBefore ? "Scattered habits" : "Active habits"}
+            </span>
+
+            <span className="text-xs text-muted-foreground">
+              {isBefore
+                ? "0 streaks"
+                : `${activeStreaks} ${
+                    activeStreaks === 1 ? "streak" : "streaks"
+                  }`}
+            </span>
+          </div>
+
+          <ul className="mt-4 space-y-3">
+            {habits.map((habit) => (
+              <li
+                key={habit.name}
+                className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
+              >
+                <span className="flex items-center gap-2">
+                  <span
+                    className={`inline-block size-2 rounded-full ${
+                      habit.streak > 0
+                        ? isBefore
+                          ? "bg-muted-foreground/30"
+                          : "bg-accent-atomic"
+                        : "bg-muted-foreground/20"
+                    }`}
+                  />
+
+                  {habit.name}
+                </span>
+
+                <span
+                  className={`text-xs font-medium ${
+                    habit.streak > 0
+                      ? isBefore
+                        ? "text-muted-foreground"
+                        : "text-accent-atomic"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {isBefore
+                    ? `${habit.streak}/${habit.total}`
+                    : `${habit.streak} days`}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-5 border-t border-border/70 pt-4">
+            <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span>
+                {isBefore ? "Inconsistent activity" : "Active streaks"}
+              </span>
+
+              <Flame
+                className="size-3.5"
+                style={{
+                  color: isBefore
+                    ? "var(--muted-foreground)"
+                    : "var(--accent-atomic)",
+                }}
+              />
+            </div>
+
+            <div className="grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
+              {heatmap.map((filled, index) => (
+                <span
+                  key={index}
+                  className="aspect-square rounded-[3px] transition-colors"
+                  style={{
+                    background: filled
+                      ? isBefore
+                        ? "var(--muted-foreground)"
+                        : "var(--accent-atomic)"
+                      : "var(--muted)",
+                    opacity: isBefore && filled ? 0.5 : 1,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {!isBefore && (
+            <div className="mt-6 flex justify-end">
+              <Link to="/signup" className="cta-button-sm">
+                Start your transformation
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// Home
+// ============================================================
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [viewMode, setViewMode] = useState("after");
 
-  // Before data
-  const beforeTasks = [
-    {
-      label: "Write report for Q3",
-      priority: "high",
-      done: false,
-      due: "Overdue",
-    },
-    { label: "Buy groceries", priority: "low", done: false, due: "Tomorrow" },
-    { label: "Clean inbox", priority: "medium", done: false, due: "Today" },
-    { label: "Call mom", priority: "high", done: false, due: "Yesterday" },
-    { label: "Review budget", priority: "low", done: false, due: "Next week" },
-    { label: "Plan vacation", priority: "medium", done: false, due: "Someday" },
-  ];
-  const afterTasks = [
-    {
-      label: "Draft investor update",
-      done: true,
-      priority: "high",
-      due: "Today",
-    },
-    { label: "Review PR #142", done: true, priority: "medium", due: "Today" },
-    {
-      label: "Outline onboarding flow",
-      done: true,
-      priority: "high",
-      due: "Today",
-    },
-    {
-      label: "Call Sarah re: pricing",
-      done: true,
-      priority: "medium",
-      due: "Today",
-    },
-    {
-      label: "Write changelog entry",
-      done: false,
-      priority: "low",
-      due: "Tomorrow",
-    },
-    {
-      label: "Plan next sprint",
-      done: false,
-      priority: "medium",
-      due: "Friday",
-    },
-  ];
-  const beforeHabits = [
-    { name: "Exercise", streak: 1, total: 12 },
-    { name: "Read", streak: 0, total: 5 },
-    { name: "Meditate", streak: 2, total: 8 },
-    { name: "Journal", streak: 0, total: 3 },
-  ];
-  const afterHabits = [
-    { name: "Exercise", streak: 18, total: 20 },
-    { name: "Read", streak: 12, total: 12 },
-    { name: "Meditate", streak: 9, total: 10 },
-    { name: "Journal", streak: 7, total: 8 },
-  ];
-  const beforeHeatmap = [
-    0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-    1, 0, 0,
-  ].map(Boolean);
-  const afterHeatmap = new Array(28).fill(1).map(Boolean);
-
-  const tasks = viewMode === "before" ? beforeTasks : afterTasks;
-  const habits = viewMode === "before" ? beforeHabits : afterHabits;
-  const heatmap = viewMode === "before" ? beforeHeatmap : afterHeatmap;
-  const totalDone = tasks.filter((t) => t.done).length;
-  const totalTasks = tasks.length;
-  const completion =
-    totalTasks > 0 ? Math.round((totalDone / totalTasks) * 100) : 0;
   const isBefore = viewMode === "before";
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
-      {/* ---- Global CursorGrid Background ---- */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+    <div className="relative min-h-screen bg-background text-foreground">
+      {/* Global CursorGrid */}
+      <div className="pointer-events-none fixed inset-0 z-0">
         <CursorGrid
           global={true}
           scrollEffect={true}
@@ -343,16 +820,21 @@ export default function Home() {
           holdTime={400}
           fadeDuration={800}
           lineWidth={1.2}
-          maxOpacity={0.5} // increased for visibility
+          maxOpacity={0.4}
           fillOpacity={0}
-          gridOpacity={0.08} // lattice visible in both modes
+          gridOpacity={0.05}
           cellRadius={6}
           clickPulse
           pulseSpeed={600}
         />
       </div>
+
       <BackgroundDecor viewMode={viewMode} />
-      {/* Nav */}
+
+      {/* ======================================================
+          NAV
+      ====================================================== */}
+
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
@@ -370,12 +852,21 @@ export default function Home() {
             >
               How it works
             </a>
+
             <a
               href="#preview"
               className="transition-colors hover:text-foreground"
             >
               Preview
             </a>
+
+            <a
+              href="#habits"
+              className="transition-colors hover:text-foreground"
+            >
+              Habits
+            </a>
+
             <a
               href="#before-after"
               className="transition-colors hover:text-foreground"
@@ -386,22 +877,26 @@ export default function Home() {
 
           <div className="hidden items-center gap-3 md:flex">
             <ThemeToggle />
+
             <Link
               to="/login"
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               Log in
             </Link>
+
             <Link to="/signup" className="cta-button-sm">
-              Get started <ArrowRight className="size-3.5" />
+              Get started
+              <ArrowRight className="size-3.5" />
             </Link>
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
+
             <button
               type="button"
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={() => setMenuOpen((value) => !value)}
               aria-label="Toggle menu"
               aria-expanded={menuOpen}
               className="inline-flex size-8 items-center justify-center rounded-lg border border-border"
@@ -424,6 +919,7 @@ export default function Home() {
             >
               How it works
             </a>
+
             <a
               href="#preview"
               onClick={() => setMenuOpen(false)}
@@ -431,6 +927,15 @@ export default function Home() {
             >
               Preview
             </a>
+
+            <a
+              href="#habits"
+              onClick={() => setMenuOpen(false)}
+              className="block py-2 text-sm text-muted-foreground"
+            >
+              Habits
+            </a>
+
             <a
               href="#before-after"
               onClick={() => setMenuOpen(false)}
@@ -438,6 +943,7 @@ export default function Home() {
             >
               Before / After
             </a>
+
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
@@ -445,6 +951,7 @@ export default function Home() {
             >
               Log in
             </Link>
+
             <Link
               to="/signup"
               onClick={() => setMenuOpen(false)}
@@ -455,7 +962,11 @@ export default function Home() {
           </div>
         )}
       </header>
-      {/* Hero */}
+
+      {/* ======================================================
+          HERO
+      ====================================================== */}
+
       <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 -z-10"
@@ -464,40 +975,61 @@ export default function Home() {
               "radial-gradient(60% 50% at 50% 0%, color-mix(in oklch, var(--accent-atomic) 12%, transparent), transparent 70%)",
           }}
         />
+
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:py-32">
           <div className="animate-hero-in">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
               <span
                 className="size-1.5 rounded-full"
-                style={{ background: "var(--accent-atomic)" }}
+                style={{
+                  background: "var(--accent-atomic)",
+                }}
               />
               Task & habit system
             </span>
+
             <h1 className="mt-5 font-heading text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.4rem]">
               Break the big thing into the{" "}
-              <span style={{ color: "var(--accent-atomic)" }}>next</span> thing.
+              <span
+                style={{
+                  color: "var(--accent-atomic)",
+                }}
+              >
+                next
+              </span>{" "}
+              thing.
             </h1>
+
             <p className="mt-5 max-w-lg text-base text-muted-foreground sm:text-lg">
               AtomicTask turns overwhelming goals into small, trackable actions
               — so you always know exactly what to do next, and can see the
               streak you're building.
             </p>
+
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link to="/signup" className="cta-button">
-                Start free <ArrowRight className="size-4" />
+                Start free
+                <ArrowRight className="size-4" />
               </Link>
+
               <Link to="/login" className="cta-outline">
                 Log in
               </Link>
             </div>
+
             <p className="mt-4 text-xs text-muted-foreground">
               Free tier available. No credit card required.
             </p>
           </div>
+
           <OrbitDiagram />
         </div>
       </section>
-      {/* Three-step loop */}
+
+      {/* ======================================================
+          HOW IT WORKS
+      ====================================================== */}
+
       <section
         id="how-it-works"
         className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24"
@@ -506,23 +1038,27 @@ export default function Home() {
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             The loop
           </span>
+
           <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
             Three small steps, repeated daily
           </h2>
+
           <p className="mt-3 text-muted-foreground">
             No project plans. No dashboards to configure. Just the next atomic
             action, every time.
           </p>
         </div>
+
         <ol className="mt-14 grid gap-6 sm:grid-cols-3">
-          {steps.map((step, i) => (
+          {steps.map((step, index) => (
             <li
               key={step.title}
               className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-foreground/20"
             >
               <span className="font-heading text-sm font-semibold text-muted-foreground/70">
-                0{i + 1}
+                0{index + 1}
               </span>
+
               <div
                 className="mt-4 inline-flex size-10 items-center justify-center rounded-xl"
                 style={{
@@ -532,12 +1068,16 @@ export default function Home() {
               >
                 <step.icon
                   className="size-5"
-                  style={{ color: "var(--accent-atomic)" }}
+                  style={{
+                    color: "var(--accent-atomic)",
+                  }}
                 />
               </div>
+
               <h3 className="mt-4 font-heading text-lg font-semibold">
                 {step.title}
               </h3>
+
               <p className="mt-2 text-sm text-muted-foreground">
                 {step.description}
               </p>
@@ -545,7 +1085,13 @@ export default function Home() {
           ))}
         </ol>
       </section>
-      {/* Product preview */}
+
+      {/* ======================================================
+          PRODUCT PREVIEW
+      ====================================================== */}
+
+      <HabitTrackerModule />
+
       <section
         id="preview"
         className="border-y border-border/70 bg-muted/30 py-20 sm:py-24"
@@ -555,13 +1101,16 @@ export default function Home() {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Built for follow-through
             </span>
+
             <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
               See today, not someday
             </h2>
+
             <p className="mt-4 text-muted-foreground">
               The dashboard shows exactly what's due right now and how your
               streaks are holding up — nothing else competes for your attention.
             </p>
+
             <ul className="mt-6 space-y-3 text-sm">
               {[
                 "Atomic subtasks with one-tap complete",
@@ -571,13 +1120,17 @@ export default function Home() {
                 <li key={item} className="flex items-start gap-2.5">
                   <Check
                     className="mt-0.5 size-4 shrink-0"
-                    style={{ color: "var(--accent-atomic)" }}
+                    style={{
+                      color: "var(--accent-atomic)",
+                    }}
                   />
+
                   <span className="text-muted-foreground">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
+
           <div className="relative">
             <div
               className="absolute -inset-6 -z-10 rounded-3xl blur-3xl"
@@ -586,56 +1139,71 @@ export default function Home() {
                   "color-mix(in oklch, var(--accent-atomic) 18%, transparent)",
               }}
             />
+
             <div className="rounded-2xl border border-border bg-card p-5 shadow-lg">
               <div className="flex items-center justify-between border-b border-border/70 pb-3">
                 <span className="text-sm font-semibold">Today</span>
+
                 <span className="text-xs text-muted-foreground">
                   4 of 6 done
                 </span>
               </div>
+
               <ul className="mt-3 space-y-2.5">
-                {afterTasks.map((t) => (
+                {afterTasks.map((task) => (
                   <li
-                    key={t.label}
+                    key={task.id}
                     className="flex items-center gap-3 rounded-lg px-2 py-2 text-sm"
                   >
                     <span
-                      className={`flex size-4 items-center justify-center rounded-full border ${t.done ? "border-transparent" : "border-border"}`}
+                      className={`flex size-4 items-center justify-center rounded-full border ${
+                        task.done ? "border-transparent" : "border-border"
+                      }`}
                       style={
-                        t.done
-                          ? { background: "var(--accent-atomic)" }
+                        task.done
+                          ? {
+                              background: "var(--accent-atomic)",
+                            }
                           : undefined
                       }
                     >
-                      {t.done && (
+                      {task.done && (
                         <Check
                           className="size-3"
-                          style={{ color: "var(--accent-atomic-foreground)" }}
+                          style={{
+                            color: "var(--accent-atomic-foreground)",
+                          }}
                         />
                       )}
                     </span>
+
                     <span
                       className={
-                        t.done ? "text-muted-foreground line-through" : ""
+                        task.done ? "text-muted-foreground line-through" : ""
                       }
                     >
-                      {t.label}
+                      {task.label}
                     </span>
                   </li>
                 ))}
               </ul>
+
               <div className="mt-5 border-t border-border/70 pt-4">
                 <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
                   <span>22-day streak</span>
+
                   <Flame
                     className="size-3.5"
-                    style={{ color: "var(--accent-atomic)" }}
+                    style={{
+                      color: "var(--accent-atomic)",
+                    }}
                   />
                 </div>
+
                 <div className="grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
-                  {afterHeatmap.map((filled, i) => (
+                  {afterHeatmap.map((filled, index) => (
                     <span
-                      key={i}
+                      key={index}
                       className="aspect-square rounded-[3px]"
                       style={{
                         background: filled
@@ -650,7 +1218,15 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* BEFORE / AFTER */}
+
+      {/* ======================================================
+          HABIT TRACKER
+      ====================================================== */}
+
+      {/* ======================================================
+          BEFORE / AFTER
+      ====================================================== */}
+
       <section
         id="before-after"
         className="border-y border-border/70 bg-muted/30 py-20 sm:py-24"
@@ -660,10 +1236,12 @@ export default function Home() {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               The transformation
             </span>
+
             <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
               Before & After
             </h2>
-            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
               See how AtomicTask takes the chaos and turns it into clarity.
             </p>
           </div>
@@ -671,10 +1249,13 @@ export default function Home() {
           {/* Toggle */}
           <div className="mt-10 flex items-center justify-center gap-4">
             <span
-              className={`text-sm font-medium transition-colors ${isBefore ? "text-foreground" : "text-muted-foreground"}`}
+              className={`text-sm font-medium transition-colors ${
+                isBefore ? "text-foreground" : "text-muted-foreground"
+              }`}
             >
               Before
             </span>
+
             <button
               type="button"
               role="switch"
@@ -692,15 +1273,18 @@ export default function Home() {
                 }}
               />
             </button>
+
             <span
-              className={`text-sm font-medium transition-colors ${!isBefore ? "text-foreground" : "text-muted-foreground"}`}
+              className={`text-sm font-medium transition-colors ${
+                !isBefore ? "text-foreground" : "text-muted-foreground"
+              }`}
             >
               After
             </span>
           </div>
 
-          {/* Card */}
-          <div className="mt-8 relative">
+          {/* Demo */}
+          <div className="relative mt-8">
             <div
               className="absolute -inset-6 -z-10 rounded-3xl blur-3xl"
               style={{
@@ -708,173 +1292,16 @@ export default function Home() {
                   "color-mix(in oklch, var(--accent-atomic) 18%, transparent)",
               }}
             />
-            <div
-              className="rounded-2xl border border-border bg-card p-6 shadow-lg transition-all duration-500 ease-in-out"
-              style={{ transform: isBefore ? "scale(0.98)" : "scale(1)" }}
-            >
-              <div className="grid gap-8 md:grid-cols-2">
-                {/* Tasks */}
-                <div>
-                  <div className="flex items-center justify-between border-b border-border/70 pb-3">
-                    <span className="text-sm font-semibold">
-                      {isBefore ? "Cluttered tasks" : "Today's priorities"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {completion}% done
-                    </span>
-                  </div>
-                  <ul className="mt-4 space-y-2.5">
-                    {tasks.map((t) => {
-                      const isOverdue =
-                        t.due === "Overdue" || t.due === "Yesterday";
-                      return (
-                        <li
-                          key={t.label}
-                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${isBefore ? "bg-muted/30 hover:bg-muted/50" : "hover:bg-muted/30"}`}
-                        >
-                          <span
-                            className={`flex size-4 items-center justify-center rounded-full border ${t.done ? "border-transparent" : "border-border"}`}
-                            style={
-                              t.done
-                                ? { background: "var(--accent-atomic)" }
-                                : undefined
-                            }
-                          >
-                            {t.done && (
-                              <Check
-                                className="size-3"
-                                style={{
-                                  color: "var(--accent-atomic-foreground)",
-                                }}
-                              />
-                            )}
-                          </span>
-                          <span
-                            className={`flex-1 ${t.done ? "text-muted-foreground line-through" : ""} ${isBefore && !t.done && isOverdue ? "text-destructive" : ""}`}
-                          >
-                            {t.label}
-                          </span>
-                          {isBefore && !t.done && (
-                            <span
-                              className={`text-[10px] font-medium ${isOverdue ? "text-destructive" : "text-muted-foreground"}`}
-                            >
-                              {t.due}
-                            </span>
-                          )}
-                          {!isBefore && !t.done && t.priority && (
-                            <span
-                              className="text-[10px] font-medium"
-                              style={{
-                                color:
-                                  t.priority === "high"
-                                    ? "var(--accent-atomic)"
-                                    : "var(--muted-foreground)",
-                              }}
-                            >
-                              {t.priority}
-                            </span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  {isBefore && (
-                    <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <AlertCircle className="size-3.5" />
-                      <span>3 tasks overdue — stress building up</span>
-                    </p>
-                  )}
-                  {!isBefore && (
-                    <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Zap
-                        className="size-3.5"
-                        style={{ color: "var(--accent-atomic)" }}
-                      />
-                      <span>All high‑priority tasks completed</span>
-                    </p>
-                  )}
-                </div>
 
-                {/* Habits */}
-                <div>
-                  <div className="flex items-center justify-between border-b border-border/70 pb-3">
-                    <span className="text-sm font-semibold">
-                      {isBefore ? "Scattered habits" : "Active habits"}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {isBefore
-                        ? "0 streaks"
-                        : `${habits.filter((h) => h.streak > 0).length} streaks`}
-                    </span>
-                  </div>
-                  <ul className="mt-4 space-y-3">
-                    {habits.map((h) => (
-                      <li
-                        key={h.name}
-                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span
-                            className={`inline-block size-2 rounded-full ${h.streak > 0 ? (isBefore ? "bg-muted-foreground/30" : "bg-accent-atomic") : "bg-muted-foreground/20"}`}
-                          />
-                          {h.name}
-                        </span>
-                        <span
-                          className={`text-xs font-medium ${h.streak > 0 ? (isBefore ? "text-muted-foreground" : "text-accent-atomic") : "text-muted-foreground"}`}
-                        >
-                          {isBefore
-                            ? `${h.streak}/${h.total}`
-                            : `${h.streak} days`}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-5 border-t border-border/70 pt-4">
-                    <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {isBefore ? "Inconsistent activity" : "22‑day streak"}
-                      </span>
-                      <Flame
-                        className="size-3.5"
-                        style={{
-                          color: isBefore
-                            ? "var(--muted-foreground)"
-                            : "var(--accent-atomic)",
-                        }}
-                      />
-                    </div>
-                    <div className="grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
-                      {heatmap.map((filled, i) => (
-                        <span
-                          key={i}
-                          className="aspect-square rounded-[3px] transition-colors"
-                          style={{
-                            background: filled
-                              ? isBefore
-                                ? "var(--muted-foreground)"
-                                : "var(--accent-atomic)"
-                              : "var(--muted)",
-                            opacity: isBefore && filled ? 0.5 : 1,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  {!isBefore && (
-                    <div className="mt-6 flex justify-end">
-                      <Link to="/signup" className="cta-button-sm">
-                        Start your transformation{" "}
-                        <ArrowRight className="size-3.5" />
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <InteractiveDemo viewMode={viewMode} />
           </div>
         </div>
       </section>
-      {/* Final CTA */}
+
+      {/* ======================================================
+          CTA
+      ====================================================== */}
+
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-foreground px-6 py-16 text-center text-background sm:px-16">
           <div
@@ -884,16 +1311,21 @@ export default function Home() {
                 "color-mix(in oklch, var(--accent-atomic) 35%, transparent)",
             }}
           />
+
           <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
             Stop planning. Start finishing.
           </h2>
+
           <p className="mx-auto mt-3 max-w-md text-background/70">
             Set up your first atomic task in under two minutes.
           </p>
+
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link to="/signup" className="cta-button">
-              Create free account <ArrowRight className="size-4" />
+              Create free account
+              <ArrowRight className="size-4" />
             </Link>
+
             <Link
               to="/login"
               className="inline-flex items-center justify-center rounded-xl border border-background/30 px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-background/10"
@@ -903,18 +1335,25 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Footer */}
+
+      {/* ======================================================
+          FOOTER
+      ====================================================== */}
+
       <footer className="border-t border-border/70">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <div className="flex items-center gap-2 font-heading font-semibold text-foreground">
             <AtomMark className="size-5" />
             AtomicTask
           </div>
+
           <p>© {new Date().getFullYear()} AtomicTask. All rights reserved.</p>
+
           <div className="flex items-center gap-4">
             <Link to="/login" className="hover:text-foreground">
               Log in
             </Link>
+
             <Link to="/signup" className="hover:text-foreground">
               Sign up
             </Link>
