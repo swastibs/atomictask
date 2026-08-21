@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -43,26 +44,27 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto">
-      <Card>
+    <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:py-12">
+      <Card className="h-fit">
         <CardHeader>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Account</p>
           <CardTitle>Profile</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label>Name</Label>
-            <p className="text-lg font-medium">{user?.name}</p>
+          <div className="rounded-xl bg-muted/40 p-4">
+            <Label className="text-xs text-muted-foreground">Name</Label>
+            <p className="mt-1 text-lg font-medium">{user?.name}</p>
           </div>
           <div>
             <Label>Email</Label>
-            <p className="text-lg font-medium">{user?.email}</p>
+            <p className="mt-1 text-lg font-medium break-all">{user?.email}</p>
           </div>
           <div>
             <Label>Role</Label>
-            <p className="text-lg font-medium capitalize">{user?.role}</p>
+            <p className="mt-1 text-lg font-medium capitalize">{user?.role}</p>
           </div>
 
-          <hr className="my-4" />
+          <Separator className="my-4" />
           <h3 className="text-md font-semibold">Update Password</h3>
           <form onSubmit={handleUpdatePassword} className="space-y-4">
             <div>

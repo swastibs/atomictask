@@ -186,15 +186,34 @@ function DailyGraph({ stats, selectedDate, onSelect }) {
 }
 
 function StreakCalendar({ completed, today }) {
-  const days = Array.from({ length: 30 }, (_, index) => addDays(today, index - 29));
+  const todayDate = parseDate(today);
+  const monthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+  const monthEnd = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0);
+  const leadingBlanks = Array.from({ length: monthStart.getDay() }, (_, index) => index);
+  const days = Array.from(
+    { length: monthEnd.getDate() },
+    (_, index) => dateKey(new Date(todayDate.getFullYear(), todayDate.getMonth(), index + 1)),
+  );
+  const monthLabel = monthStart.toLocaleDateString(undefined, {
+    month: "long",
+    year: "numeric",
+  });
   return (
     <div className="tracker-panel heatmap-panel">
       <div className="panel-heading">
-        <div><span className="eyebrow">Consistency at a glance</span><h4>30-day streak</h4></div>
+        <div><span className="eyebrow">Consistency at a glance</span><h4>{monthLabel}</h4></div>
         <span className="panel-kicker"><Flame size={14} /> Keep the chain</span>
       </div>
-      <div className="heatmap" aria-label="30 day completion heatmap">
-        {days.map((key) => <button type="button" key={key} className={`heat-cell level-${getHeatLevel(key, completed)}`} title={`${shortDate(key)} activity`} onClick={() => {}} />)}
+      <div className="heatmap-weekdays" aria-hidden="true">
+        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}
+      </div>
+      <div className="heatmap" aria-label={`${monthLabel} completion heatmap`}>
+        {leadingBlanks.map((index) => <span className="heat-cell heat-cell-blank" key={`blank-${index}`} />)}
+        {days.map((key) => {
+          const isFuture = key > today;
+          const level = isFuture ? 0 : getHeatLevel(key, completed);
+          return <button type="button" key={key} disabled={isFuture} className={`heat-cell level-${level} ${isFuture ? "is-future" : ""}`} title={isFuture ? `${shortDate(key)} — upcoming` : `${shortDate(key)} activity`} aria-label={isFuture ? `${shortDate(key)}, upcoming` : `${shortDate(key)} activity`} onClick={() => {}} />;
+        })}
       </div>
       <div className="heatmap-key"><span>Less</span>{heatLevels.map((level) => <i className={`heat-cell level-${level}`} key={level} />)}<span>More</span></div>
     </div>
@@ -409,16 +428,14 @@ export default function HabitTrackerModule() {
                 <div
                   key={winPulseKey}
                   className={`completion-gauge ${percentage === 100 && winPulseKey ? "ring-win" : ""}`}
-                  style={{ "--gauge-color": progressColor(percentage), "--gauge-progress": `${percentage * 1.8}deg` }}
+                  style={{ "--gauge-color": progressColor(percentage) }}
                 >
-                  <span className="gauge-arc" />
-                  <span className="gauge-needle" />
-                  <span className="gauge-center" />
-                  <strong>
-                    {percentage}
-                    <small>%</small>
-                  </strong>
-                  <span>today</span>
+                  <svg className="gauge-svg" viewBox="0 0 200 116" role="img" aria-label={`${percentage}% complete today`}>
+                    <path className="gauge-track" d="M 16 98 A 84 84 0 0 1 184 98" />
+                    <path className="gauge-progress" d="M 16 98 A 84 84 0 0 1 184 98" style={{ "--gauge-offset": 264 - percentage * 2.64 }} />
+                    {percentage > 0 && <circle className="gauge-endpoint" cx={100 - 84 * Math.cos(Math.PI * (percentage / 100))} cy={98 - 84 * Math.sin(Math.PI * (percentage / 100))} r="4" />}
+                  </svg>
+                  <div className="gauge-value"><strong>{percentage}<small>%</small></strong><span>today</span></div>
                 </div>
               </div>
               <div className="progress-line">
@@ -444,6 +461,14 @@ export default function HabitTrackerModule() {
               <div className="interaction-note">
                 <MousePointer2 size={14} /> Tap a habit row to update your day
               </div>
+              <div className="habit-column-footer">
+                <div>
+                  <span className="eyebrow">Daily focus</span>
+                  <strong>{firstUnchecked ? `Next up: ${firstUnchecked.name}` : "All habits are complete"}</strong>
+                </div>
+                <span className="focus-score">{weeklyPercentage}%<small> this week</small></span>
+              </div>
+              <StreakCalendar completed={completed} today={today} />
             </div>
             <div className="insight-column">
               <div className="view-switcher">
@@ -471,7 +496,6 @@ export default function HabitTrackerModule() {
               ) : (
                 <HabitGraph dates={dates} completed={completed} />
               )}
-              <StreakCalendar completed={completed} today={today} />
               <div className="stats-grid">
                 <div className="stat-card">
                   <Flame className={[7, 14, 21, 30].includes(bestStreak) ? "milestone-fire" : ""} size={16} />

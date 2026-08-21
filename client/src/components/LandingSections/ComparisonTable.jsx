@@ -1,0 +1,9 @@
+import { Check, X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { SectionFrame, SectionIntro } from "./SectionFrame";
+
+const rows = [["Tasks", "Everything", "Everything", "Everything", "Everything", "Everything"], ["Habits", "Built in", "—", "—", "Limited", "Built in"], ["AI planning", "Included", "Add-on", "—", "—", "—"], ["Gamification", "Deep", "Light", "—", "Core", "Light"], ["Community", "Accountability", "—", "—", "—", "—"], ["Integrations", "All", "Many", "Many", "Some", "Some"], ["Price to start", "Free", "$4/mo", "$5/mo", "$0", "$8/mo"]];
+/** Responsive comparison table for AtomicTasks and alternatives. */
+export default function ComparisonTable() {
+  return <SectionFrame className="bg-muted/20"><SectionIntro eyebrow="One home for the whole loop" title="More than a task list.">AtomicTasks brings the pieces together without making you manage another system.</SectionIntro><Card className="overflow-x-auto p-0"><table className="w-full min-w-[720px] border-collapse text-left text-xs"><thead><tr className="border-b text-[10px] uppercase tracking-widest text-muted-foreground"><th className="p-4">Capability</th>{["AtomicTasks", "Todoist", "Habitica", "Notion", "Fabulous"].map((name, index) => <th className={`p-4 ${index === 0 ? "bg-[var(--accent-atomic)]/10 text-foreground" : ""}`} key={name}>{name}</th>)}</tr></thead><tbody>{rows.map((row) => <tr className="border-b last:border-0" key={row[0]}>{row.map((value, index) => <td className={`p-4 ${index === 1 ? "bg-[var(--accent-atomic)]/10" : "text-muted-foreground"}`} key={`${row[0]}-${index}`}>{index === 0 ? <strong className="text-foreground">{value}</strong> : value === "—" ? <X className="size-4" /> : ["All", "Deep", "Included", "Built in"].includes(value) ? <span className="flex items-center gap-1 font-semibold text-[var(--accent-atomic)]"><Check className="size-3" />{value}</span> : value}</td>)}</tr>)}</tbody></table></Card></SectionFrame>;
+}
