@@ -28,7 +28,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(() => {
-    // Read from localStorage or system preference on mount
     const stored = window.localStorage.getItem("atomictask-theme");
     if (stored === "dark") return true;
     if (stored === "light") return false;
@@ -38,15 +37,17 @@ export default function Navbar() {
   const [showMessage, setShowMessage] = useState(false);
 
   const isHome = pathname === "/";
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
 
-  // Debounced scroll listener
+  // Show landing links on both home and auth pages.
+  const showLandingLinks = isHome || isAuthPage;
+
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Pick a random sarcastic message when light mode is active
   useEffect(() => {
     if (!isDark) {
       const randomIndex = Math.floor(Math.random() * sarcasticMessages.length);
@@ -63,20 +64,23 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  const links = isHome
-    ? [
-        ["How it works", "#how-it-works"],
-        ["Tasks", "#ai-tasks"],
-        ["Habits", "#habits"],
-      ]
-    : [
-        ["Dashboard", "/dashboard"],
-        ["Profile", "/profile"],
-      ];
+  let links = [];
+  if (showLandingLinks) {
+    links = [
+      ["How it works", "#how-it-works"],
+      ["Tasks", "#ai-tasks"],
+      ["Habits", "#habits"],
+    ];
+  } else {
+    // For dashboard, profile, admin (authenticated pages)
+    links = [
+      ["Dashboard", "/dashboard"],
+      ["Profile", "/profile"],
+    ];
+  }
 
   return (
-    <div className="sticky top-4 z-50 flex flex-col items-center px-4 transition-all duration-300">
-      {/* Navbar */}
+    <div className="sticky top-4 z-50 flex w-full flex-col items-center px-4 transition-all duration-300">
       <nav
         className={`
           flex w-full items-center justify-between gap-3 rounded-full border border-border/80 bg-background/80 px-5 py-2.5 backdrop-blur-md shadow-sm transition-all duration-300
@@ -93,28 +97,30 @@ export default function Navbar() {
           <span>AtomicTask</span>
         </Link>
 
-        {/* Center links – hidden on mobile */}
-        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 sm:flex">
-          {links.map(([label, href]) =>
-            href.startsWith("#") ? (
-              <a
-                key={label}
-                href={href}
-                className="relative text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--accent-atomic)] after:transition-transform after:duration-200 hover:after:scale-x-100"
-              >
-                {label}
-              </a>
-            ) : (
-              <Link
-                key={label}
-                to={href}
-                className="relative text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--accent-atomic)] after:transition-transform after:duration-200 hover:after:scale-x-100"
-              >
-                {label}
-              </Link>
-            ),
-          )}
-        </div>
+        {/* Center links */}
+        {links.length > 0 && (
+          <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 sm:flex">
+            {links.map(([label, href]) =>
+              href.startsWith("#") ? (
+                <a
+                  key={label}
+                  href={href}
+                  className="relative text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--accent-atomic)] after:transition-transform after:duration-200 hover:after:scale-x-100"
+                >
+                  {label}
+                </a>
+              ) : (
+                <Link
+                  key={label}
+                  to={href}
+                  className="relative text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[var(--accent-atomic)] after:transition-transform after:duration-200 hover:after:scale-x-100"
+                >
+                  {label}
+                </Link>
+              ),
+            )}
+          </div>
+        )}
 
         {/* Right actions */}
         <div className="flex shrink-0 items-center gap-3">
@@ -159,14 +165,16 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ===== EASTER EGG: Sarcastic message below navbar ===== */}
-      {!isDark && showMessage && (
-        <div className="mt-2 w-full max-w-[760px] animate-in fade-in slide-in-from-top-1 duration-500 pr-4 text-right">
-          <p className="text-xs text-muted-foreground/60 italic transition-opacity hover:text-muted-foreground/90">
-            {message}
-          </p>
-        </div>
-      )}
+      {/* Fixed‑height message container – stable layout */}
+      <div className="mt-2 w-full max-w-[760px] pr-4 text-right h-6 overflow-hidden">
+        <p
+          className={`text-xs text-muted-foreground/60 italic transition-opacity duration-500 hover:text-muted-foreground/90 ${
+            !isDark && showMessage ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {message}
+        </p>
+      </div>
     </div>
   );
 }
