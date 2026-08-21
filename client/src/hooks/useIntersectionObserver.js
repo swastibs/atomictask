@@ -12,12 +12,15 @@ export default function useIntersectionObserver(options = DEFAULT_OPTIONS) {
       setIsVisible(true);
       return undefined;
     }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsVisible(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, ...options },
+    );
     observer.observe(ref.current);
     return () => observer.disconnect();
   }, [options]);

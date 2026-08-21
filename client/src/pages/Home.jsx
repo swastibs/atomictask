@@ -16,8 +16,12 @@ import Navbar from "@/components/Navbar";
 import CursorGrid from "@/components/CursorGrid/CursorGrid";
 import DeferredModule from "@/components/DeferredModule";
 
-const HabitTrackerModule = lazy(() => import("@/components/HabitTrackerModule/HabitTrackerModule"));
-const AITaskTrackerModule = lazy(() => import("@/components/AITaskTrackerModule/AITaskTrackerModule"));
+const HabitTrackerModule = lazy(
+  () => import("@/components/HabitTrackerModule/HabitTrackerModule"),
+);
+const AITaskTrackerModule = lazy(
+  () => import("@/components/AITaskTrackerModule/AITaskTrackerModule"),
+);
 
 // ============================================================
 // Background decorative layer
@@ -963,8 +967,12 @@ export default function Home() {
       ====================================================== */}
 
       <div className="flex flex-col">
-        <DeferredModule><HabitTrackerModule /></DeferredModule>
-        <DeferredModule><AITaskTrackerModule /></DeferredModule>
+        <DeferredModule>
+          <HabitTrackerModule />
+        </DeferredModule>
+        <DeferredModule>
+          <AITaskTrackerModule />
+        </DeferredModule>
       </div>
 
       {/* ======================================================

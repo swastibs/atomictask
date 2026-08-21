@@ -13,5 +13,20 @@ import ExitIntent from "./ExitIntent";
 
 /** Ordered composition of the landing-page conversion sections. */
 export default function LandingSections() {
-  return <><AIAssistant /><GamificationShowcase /><CommunitySection /><IntegrationsSection /><PricingSection /><Testimonials /><FAQ /><TrustBadges /><MobilePreview /><ComparisonTable /><ForecastCard /><ExitIntent /></>;
+  return (
+    <>
+      <AIAssistant />
+      <GamificationShowcase />
+      <CommunitySection />
+      <IntegrationsSection />
+      <PricingSection />
+      <Testimonials />
+      <FAQ />
+      <TrustBadges />
+      <MobilePreview />
+      <ComparisonTable />
+      <ForecastCard />
+      <ExitIntent />
+    </>
+  );
 }

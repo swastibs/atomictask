@@ -176,8 +176,27 @@ function DailyGraph({ stats, selectedDate, onSelect }) {
       <div className="trend-line" aria-label="Weekly trend">
         <span className="trend-label">Weekly trend</span>
         <svg viewBox="0 0 300 42" role="img" aria-label="Completion trend line">
-          <polyline points={stats.map((item, index) => `${index * 50},${38 - item.percentage * 0.3}`).join(" ")} fill="none" stroke="var(--accent-atomic)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          {stats.map((item, index) => <circle key={item.key} cx={index * 50} cy={38 - item.percentage * 0.3} r="3" fill="var(--accent-atomic)" />)}
+          <polyline
+            points={stats
+              .map(
+                (item, index) => `${index * 50},${38 - item.percentage * 0.3}`,
+              )
+              .join(" ")}
+            fill="none"
+            stroke="var(--accent-atomic)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          {stats.map((item, index) => (
+            <circle
+              key={item.key}
+              cx={index * 50}
+              cy={38 - item.percentage * 0.3}
+              r="3"
+              fill="var(--accent-atomic)"
+            />
+          ))}
         </svg>
         <strong>{stats[stats.length - 1]?.percentage ?? 0}% today</strong>
       </div>
@@ -188,11 +207,17 @@ function DailyGraph({ stats, selectedDate, onSelect }) {
 function StreakCalendar({ completed, today }) {
   const todayDate = parseDate(today);
   const monthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
-  const monthEnd = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0);
-  const leadingBlanks = Array.from({ length: monthStart.getDay() }, (_, index) => index);
-  const days = Array.from(
-    { length: monthEnd.getDate() },
-    (_, index) => dateKey(new Date(todayDate.getFullYear(), todayDate.getMonth(), index + 1)),
+  const monthEnd = new Date(
+    todayDate.getFullYear(),
+    todayDate.getMonth() + 1,
+    0,
+  );
+  const leadingBlanks = Array.from(
+    { length: monthStart.getDay() },
+    (_, index) => index,
+  );
+  const days = Array.from({ length: monthEnd.getDate() }, (_, index) =>
+    dateKey(new Date(todayDate.getFullYear(), todayDate.getMonth(), index + 1)),
   );
   const monthLabel = monthStart.toLocaleDateString(undefined, {
     month: "long",
@@ -201,21 +226,54 @@ function StreakCalendar({ completed, today }) {
   return (
     <div className="tracker-panel heatmap-panel">
       <div className="panel-heading">
-        <div><span className="eyebrow">Consistency at a glance</span><h4>{monthLabel}</h4></div>
-        <span className="panel-kicker"><Flame size={14} /> Keep the chain</span>
+        <div>
+          <span className="eyebrow">Consistency at a glance</span>
+          <h4>{monthLabel}</h4>
+        </div>
+        <span className="panel-kicker">
+          <Flame size={14} /> Keep the chain
+        </span>
       </div>
       <div className="heatmap-weekdays" aria-hidden="true">
-        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}
+        {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+          <span key={`${day}-${index}`}>{day}</span>
+        ))}
       </div>
       <div className="heatmap" aria-label={`${monthLabel} completion heatmap`}>
-        {leadingBlanks.map((index) => <span className="heat-cell heat-cell-blank" key={`blank-${index}`} />)}
+        {leadingBlanks.map((index) => (
+          <span className="heat-cell heat-cell-blank" key={`blank-${index}`} />
+        ))}
         {days.map((key) => {
           const isFuture = key > today;
           const level = isFuture ? 0 : getHeatLevel(key, completed);
-          return <button type="button" key={key} disabled={isFuture} className={`heat-cell level-${level} ${isFuture ? "is-future" : ""}`} title={isFuture ? `${shortDate(key)} — upcoming` : `${shortDate(key)} activity`} aria-label={isFuture ? `${shortDate(key)}, upcoming` : `${shortDate(key)} activity`} onClick={() => {}} />;
+          return (
+            <button
+              type="button"
+              key={key}
+              disabled={isFuture}
+              className={`heat-cell level-${level} ${isFuture ? "is-future" : ""}`}
+              title={
+                isFuture
+                  ? `${shortDate(key)} — upcoming`
+                  : `${shortDate(key)} activity`
+              }
+              aria-label={
+                isFuture
+                  ? `${shortDate(key)}, upcoming`
+                  : `${shortDate(key)} activity`
+              }
+              onClick={() => {}}
+            />
+          );
         })}
       </div>
-      <div className="heatmap-key"><span>Less</span>{heatLevels.map((level) => <i className={`heat-cell level-${level}`} key={level} />)}<span>More</span></div>
+      <div className="heatmap-key">
+        <span>Less</span>
+        {heatLevels.map((level) => (
+          <i className={`heat-cell level-${level}`} key={level} />
+        ))}
+        <span>More</span>
+      </div>
     </div>
   );
 }
@@ -308,7 +366,10 @@ export default function HabitTrackerModule() {
     return () => window.clearTimeout(timer);
   }, [selectedDate, completed, firstUnchecked?.id]);
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => setIsVisible(entry.isIntersecting), { threshold: 0.12 });
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.12 },
+    );
     if (trackerRef.current) observer.observe(trackerRef.current);
     return () => observer.disconnect();
   }, []);
@@ -351,13 +412,28 @@ export default function HabitTrackerModule() {
     bestStreak > 0 ? `${bestStreak} day streak` : "Start a streak today";
   const averages = HABITS.map((habit) => ({
     ...habit,
-    percentage: Math.round((dates.filter((key) => completed[key]?.[habit.id]).length / dates.length) * 100),
+    percentage: Math.round(
+      (dates.filter((key) => completed[key]?.[habit.id]).length /
+        dates.length) *
+        100,
+    ),
   }));
-  const mostImproved = [...averages].sort((a, b) => b.percentage - a.percentage)[0];
-  const quote = bestStreak >= 21 ? "Consistency is becoming part of who you are." : percentage === 100 ? "A perfect day is proof that the system works." : "Small enough to start. Strong enough to compound.";
+  const mostImproved = [...averages].sort(
+    (a, b) => b.percentage - a.percentage,
+  )[0];
+  const quote =
+    bestStreak >= 21
+      ? "Consistency is becoming part of who you are."
+      : percentage === 100
+        ? "A perfect day is proof that the system works."
+        : "Small enough to start. Strong enough to compound.";
 
   return (
-    <section id="habits" className={`habit-section scroll-reveal ${isVisible ? "is-visible" : ""}`} ref={trackerRef}>
+    <section
+      id="habits"
+      className={`habit-section scroll-reveal ${isVisible ? "is-visible" : ""}`}
+      ref={trackerRef}
+    >
       <div className="habit-shell">
         <div className="habit-intro">
           <span className="eyebrow">A calmer way to stay consistent</span>
@@ -430,12 +506,37 @@ export default function HabitTrackerModule() {
                   className={`completion-gauge ${percentage === 100 && winPulseKey ? "ring-win" : ""}`}
                   style={{ "--gauge-color": progressColor(percentage) }}
                 >
-                  <svg className="gauge-svg" viewBox="0 0 200 116" role="img" aria-label={`${percentage}% complete today`}>
-                    <path className="gauge-track" d="M 16 98 A 84 84 0 0 1 184 98" />
-                    <path className="gauge-progress" d="M 16 98 A 84 84 0 0 1 184 98" style={{ "--gauge-offset": 264 - percentage * 2.64 }} />
-                    {percentage > 0 && <circle className="gauge-endpoint" cx={100 - 84 * Math.cos(Math.PI * (percentage / 100))} cy={98 - 84 * Math.sin(Math.PI * (percentage / 100))} r="4" />}
+                  <svg
+                    className="gauge-svg"
+                    viewBox="0 0 200 116"
+                    role="img"
+                    aria-label={`${percentage}% complete today`}
+                  >
+                    <path
+                      className="gauge-track"
+                      d="M 16 98 A 84 84 0 0 1 184 98"
+                    />
+                    <path
+                      className="gauge-progress"
+                      d="M 16 98 A 84 84 0 0 1 184 98"
+                      style={{ "--gauge-offset": 264 - percentage * 2.64 }}
+                    />
+                    {percentage > 0 && (
+                      <circle
+                        className="gauge-endpoint"
+                        cx={100 - 84 * Math.cos(Math.PI * (percentage / 100))}
+                        cy={98 - 84 * Math.sin(Math.PI * (percentage / 100))}
+                        r="4"
+                      />
+                    )}
                   </svg>
-                  <div className="gauge-value"><strong>{percentage}<small>%</small></strong><span>today</span></div>
+                  <div className="gauge-value">
+                    <strong>
+                      {percentage}
+                      <small>%</small>
+                    </strong>
+                    <span>today</span>
+                  </div>
                 </div>
               </div>
               <div className="progress-line">
@@ -464,9 +565,15 @@ export default function HabitTrackerModule() {
               <div className="habit-column-footer">
                 <div>
                   <span className="eyebrow">Daily focus</span>
-                  <strong>{firstUnchecked ? `Next up: ${firstUnchecked.name}` : "All habits are complete"}</strong>
+                  <strong>
+                    {firstUnchecked
+                      ? `Next up: ${firstUnchecked.name}`
+                      : "All habits are complete"}
+                  </strong>
                 </div>
-                <span className="focus-score">{weeklyPercentage}%<small> this week</small></span>
+                <span className="focus-score">
+                  {weeklyPercentage}%<small> this week</small>
+                </span>
               </div>
               <StreakCalendar completed={completed} today={today} />
             </div>
@@ -498,7 +605,14 @@ export default function HabitTrackerModule() {
               )}
               <div className="stats-grid">
                 <div className="stat-card">
-                  <Flame className={[7, 14, 21, 30].includes(bestStreak) ? "milestone-fire" : ""} size={16} />
+                  <Flame
+                    className={
+                      [7, 14, 21, 30].includes(bestStreak)
+                        ? "milestone-fire"
+                        : ""
+                    }
+                    size={16}
+                  />
                   <span>Best streak</span>
                   <strong>{bestStreak}</strong>
                   <small>{streakText}</small>
@@ -517,10 +631,30 @@ export default function HabitTrackerModule() {
                 </div>
               </div>
               <div className="habit-summary-grid">
-                <div className="summary-card challenge-card"><span className="eyebrow">Today&apos;s challenge</span><strong>Finish one habit before noon.</strong><small>Early wins make the rest feel lighter.</small></div>
-                <div className="summary-card"><span className="eyebrow">Monthly snapshot</span><strong>{Math.max(weeklyPercentage, 74)}% rhythm</strong><small>Most improved: {mostImproved.name}</small><blockquote>&quot;{quote}&quot;</blockquote></div>
+                <div className="summary-card challenge-card">
+                  <span className="eyebrow">Today&apos;s challenge</span>
+                  <strong>Finish one habit before noon.</strong>
+                  <small>Early wins make the rest feel lighter.</small>
+                </div>
+                <div className="summary-card">
+                  <span className="eyebrow">Monthly snapshot</span>
+                  <strong>{Math.max(weeklyPercentage, 74)}% rhythm</strong>
+                  <small>Most improved: {mostImproved.name}</small>
+                  <blockquote>&quot;{quote}&quot;</blockquote>
+                </div>
               </div>
-              <div className="milestone-row"><Target size={15} /><span>Your next milestone: <strong>{Math.max(30 - bestStreak, 1)} days to a 30-day forecast</strong></span><span className="people-count">1,247 tracking habits right now</span></div>
+              <div className="milestone-row">
+                <Target size={15} />
+                <span>
+                  Your next milestone:{" "}
+                  <strong>
+                    {Math.max(30 - bestStreak, 1)} days to a 30-day forecast
+                  </strong>
+                </span>
+                <span className="people-count">
+                  1,247 tracking habits right now
+                </span>
+              </div>
             </div>
           </div>
         </div>

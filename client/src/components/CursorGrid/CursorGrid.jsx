@@ -109,7 +109,21 @@ const CursorGrid = ({
       pulseSpeed,
       scrollEffect,
     };
-  }, [cellSize, radius, falloff, holdTime, fadeDuration, lineWidth, maxOpacity, fillOpacity, gridOpacity, cellRadius, clickPulse, pulseSpeed, scrollEffect]);
+  }, [
+    cellSize,
+    radius,
+    falloff,
+    holdTime,
+    fadeDuration,
+    lineWidth,
+    maxOpacity,
+    fillOpacity,
+    gridOpacity,
+    cellRadius,
+    clickPulse,
+    pulseSpeed,
+    scrollEffect,
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -314,11 +328,14 @@ const CursorGrid = ({
     };
     wakeRef.current = wake;
 
-    const visibilityObserver = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-      if (isVisible) wake();
-      else cancelAnimationFrame(raf);
-    }, { threshold: 0 });
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) wake();
+        else cancelAnimationFrame(raf);
+      },
+      { threshold: 0 },
+    );
     visibilityObserver.observe(container);
 
     const toLocal = (clientX, clientY) => {

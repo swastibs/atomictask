@@ -47,7 +47,9 @@ export default function Profile() {
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:py-12">
       <Card className="h-fit">
         <CardHeader>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Account</p>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            Account
+          </p>
           <CardTitle>Profile</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">

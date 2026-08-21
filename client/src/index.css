@@ -88,7 +88,11 @@
   --accent-atomic: oklch(0.78 0.16 70);
   --accent-atomic-foreground: oklch(0.18 0.03 70);
   --accent-orbit: oklch(0.55 0.2 260);
-  --auth-overlay: color-mix(in oklch, var(--accent-atomic) 88%, var(--foreground));
+  --auth-overlay: color-mix(
+    in oklch,
+    var(--accent-atomic) 88%,
+    var(--foreground)
+  );
   --auth-overlay-foreground: var(--background);
 }
 
@@ -138,7 +142,11 @@
   --accent-atomic: oklch(0.82 0.18 70);
   --accent-atomic-foreground: oklch(0.15 0.03 70);
   --accent-orbit: oklch(0.75 0.2 260);
-  --auth-overlay: color-mix(in oklch, var(--accent-atomic) 78%, var(--foreground));
+  --auth-overlay: color-mix(
+    in oklch,
+    var(--accent-atomic) 78%,
+    var(--foreground)
+  );
   --auth-overlay-foreground: var(--background);
 }
 

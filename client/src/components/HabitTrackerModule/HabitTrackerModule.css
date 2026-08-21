@@ -6,8 +6,17 @@
   border-block: 1px solid var(--line);
   background: color-mix(in oklch, var(--muted) 35%, var(--background));
 }
-.scroll-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
-.scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 .habit-shell {
   max-width: 1120px;
   margin: auto;
@@ -186,15 +195,23 @@
   stroke: var(--gauge-color);
   stroke-dasharray: 264;
   stroke-dashoffset: var(--gauge-offset);
-  filter: drop-shadow(0 3px 5px color-mix(in oklch, var(--gauge-color) 28%, transparent));
-  transition: stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;
+  filter: drop-shadow(
+    0 3px 5px color-mix(in oklch, var(--gauge-color) 28%, transparent)
+  );
+  transition:
+    stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    stroke 0.3s ease;
 }
 .gauge-endpoint {
   fill: var(--gauge-color);
   stroke: var(--card);
   stroke-width: 3;
-  filter: drop-shadow(0 2px 4px color-mix(in oklch, var(--gauge-color) 38%, transparent));
-  transition: cx 0.65s cubic-bezier(0.22, 1, 0.36, 1), cy 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(
+    0 2px 4px color-mix(in oklch, var(--gauge-color) 38%, transparent)
+  );
+  transition:
+    cx 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    cy 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .gauge-value {
   position: relative;
@@ -555,7 +572,9 @@
   font-size: 0.6rem;
   white-space: nowrap;
 }
-.trend-line strong { color: var(--accent-atomic); }
+.trend-line strong {
+  color: var(--accent-atomic);
+}
 .heatmap-panel {
   width: 100%;
   margin-top: 0.9rem;
@@ -590,21 +609,53 @@
   border-radius: 2px;
   background: color-mix(in oklch, var(--muted) 70%, transparent);
 }
-button.heat-cell { cursor: pointer; transition: transform 0.18s, filter 0.18s; }
-button.heat-cell:hover { transform: scale(1.15); filter: brightness(1.08); }
-.heat-cell-blank { visibility: hidden; }
+button.heat-cell {
+  cursor: pointer;
+  transition:
+    transform 0.18s,
+    filter 0.18s;
+}
+button.heat-cell:hover {
+  transform: scale(1.15);
+  filter: brightness(1.08);
+}
+.heat-cell-blank {
+  visibility: hidden;
+}
 .heat-cell.is-future {
   border-color: color-mix(in oklch, var(--border) 60%, transparent);
   background: transparent;
   cursor: default;
 }
-button.heat-cell.is-future:hover { transform: none; filter: none; }
-.heat-cell.level-1 { background: color-mix(in oklch, var(--accent-atomic) 25%, var(--muted)); }
-.heat-cell.level-2 { background: color-mix(in oklch, var(--accent-atomic) 45%, var(--muted)); }
-.heat-cell.level-3 { background: color-mix(in oklch, var(--accent-atomic) 70%, var(--muted)); }
-.heat-cell.level-4 { background: var(--accent-atomic); }
-.heatmap-key { display: flex; align-items: center; gap: 0.28rem; width: fit-content; margin: 0.7rem auto 0; color: var(--soft-ink); font-size: 0.58rem; }
-.heatmap-key .heat-cell { width: 10px; height: 10px; }
+button.heat-cell.is-future:hover {
+  transform: none;
+  filter: none;
+}
+.heat-cell.level-1 {
+  background: color-mix(in oklch, var(--accent-atomic) 25%, var(--muted));
+}
+.heat-cell.level-2 {
+  background: color-mix(in oklch, var(--accent-atomic) 45%, var(--muted));
+}
+.heat-cell.level-3 {
+  background: color-mix(in oklch, var(--accent-atomic) 70%, var(--muted));
+}
+.heat-cell.level-4 {
+  background: var(--accent-atomic);
+}
+.heatmap-key {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  width: fit-content;
+  margin: 0.7rem auto 0;
+  color: var(--soft-ink);
+  font-size: 0.58rem;
+}
+.heatmap-key .heat-cell {
+  width: 10px;
+  height: 10px;
+}
 .legend-dot {
   display: inline-block;
   width: 6px;
@@ -689,7 +740,9 @@ button.heat-cell.is-future:hover { transform: none; filter: none; }
   grid-row: span 2;
   color: var(--accent-atomic);
 }
-.milestone-fire { animation: milestone-fire 1.4s ease-in-out infinite; }
+.milestone-fire {
+  animation: milestone-fire 1.4s ease-in-out infinite;
+}
 .stat-card span {
   color: var(--soft-ink);
   font-size: 0.65rem;
@@ -705,17 +758,62 @@ button.heat-cell.is-future:hover { transform: none; filter: none; }
   color: var(--soft-ink);
   font-size: 0.6rem;
 }
-.habit-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 0.7rem; }
-.summary-card { padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in oklch, var(--muted) 25%, transparent); }
-.summary-card strong, .summary-card small { display: block; }
-.summary-card strong { margin-top: 0.45rem; font-size: 0.82rem; }
-.summary-card small { margin-top: 0.35rem; color: var(--soft-ink); font-size: 0.64rem; }
-.summary-card blockquote { margin: 0.7rem 0 0; color: var(--soft-ink); font-size: 0.66rem; line-height: 1.45; }
-.challenge-card { border-color: color-mix(in oklch, var(--accent-atomic) 45%, var(--border)); background: color-mix(in oklch, var(--accent-atomic) 8%, var(--card)); }
-.milestone-row { display: flex; align-items: center; gap: 0.45rem; margin-top: 1rem; color: var(--soft-ink); font-size: 0.64rem; }
-.milestone-row svg { flex: 0 0 auto; color: var(--accent-atomic); }
-.milestone-row strong { color: var(--ink); }
-.people-count { margin-left: auto; color: var(--accent-atomic); font-weight: 700; text-align: right; }
+.habit-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+.summary-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in oklch, var(--muted) 25%, transparent);
+}
+.summary-card strong,
+.summary-card small {
+  display: block;
+}
+.summary-card strong {
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+}
+.summary-card small {
+  margin-top: 0.35rem;
+  color: var(--soft-ink);
+  font-size: 0.64rem;
+}
+.summary-card blockquote {
+  margin: 0.7rem 0 0;
+  color: var(--soft-ink);
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+.challenge-card {
+  border-color: color-mix(in oklch, var(--accent-atomic) 45%, var(--border));
+  background: color-mix(in oklch, var(--accent-atomic) 8%, var(--card));
+}
+.milestone-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  color: var(--soft-ink);
+  font-size: 0.64rem;
+}
+.milestone-row svg {
+  flex: 0 0 auto;
+  color: var(--accent-atomic);
+}
+.milestone-row strong {
+  color: var(--ink);
+}
+.people-count {
+  margin-left: auto;
+  color: var(--accent-atomic);
+  font-weight: 700;
+  text-align: right;
+}
 @keyframes hint-border {
   0%,
   100% {
@@ -752,7 +850,16 @@ button.heat-cell.is-future:hover { transform: none; filter: none; }
       color-mix(in oklch, var(--accent-atomic) 0%, transparent);
   }
 }
-@keyframes milestone-fire { 0%, 100% { transform: scale(1) rotate(-4deg); } 50% { color: #e7836b; transform: scale(1.18) rotate(4deg); } }
+@keyframes milestone-fire {
+  0%,
+  100% {
+    transform: scale(1) rotate(-4deg);
+  }
+  50% {
+    color: #e7836b;
+    transform: scale(1.18) rotate(4deg);
+  }
+}
 @media (max-width: 760px) {
   .habit-section {
     padding: 4.5rem 0.75rem;
@@ -775,7 +882,9 @@ button.heat-cell.is-future:hover { transform: none; filter: none; }
     gap: 2rem;
     padding: 1.1rem;
   }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
   .report-row {
     grid-template-columns: 105px 1fr 34px 20px;
     gap: 0.45rem;
@@ -783,7 +892,16 @@ button.heat-cell.is-future:hover { transform: none; filter: none; }
   .daily-chart {
     gap: 0.35rem;
   }
-  .habit-summary-grid { grid-template-columns: 1fr; }
-  .milestone-row { align-items: flex-start; flex-wrap: wrap; }
-  .people-count { width: 100%; margin-left: 1.35rem; text-align: left; }
+  .habit-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .milestone-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .people-count {
+    width: 100%;
+    margin-left: 1.35rem;
+    text-align: left;
+  }
 }
