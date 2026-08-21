@@ -10,9 +10,44 @@ import {
   Menu,
   Target,
   X,
+  AlertCircle,
+  Clock,
+  Award,
+  Zap,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
+// ---- Particle background (subtle, animated) ----
+function Particles() {
+  return (
+    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {[...Array(12)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-accent-atomic/20"
+          style={{
+            width: `${2 + Math.random() * 6}px`,
+            height: `${2 + Math.random() * 6}px`,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animation: `float ${8 + Math.random() * 12}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 5}s`,
+            opacity: 0.3 + Math.random() * 0.3,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0) translateX(0); }
+          33% { transform: translateY(-30px) translateX(10px); }
+          66% { transform: translateY(20px) translateX(-15px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ---- Steps data (unchanged) ----
 const steps = [
   {
     title: "Capture it",
@@ -34,21 +69,76 @@ const steps = [
   },
 ];
 
-const mockTasks = [
-  { label: "Draft investor update", done: true },
-  { label: "Review PR #142", done: true },
-  { label: "Outline onboarding flow", done: true },
-  { label: "Call Sarah re: pricing", done: true },
-  { label: "Write changelog entry", done: false },
-  { label: "Plan next sprint", done: false },
+// ---- Before data: messy, demotivating ----
+const beforeTasks = [
+  {
+    label: "Write report for Q3",
+    priority: "high",
+    done: false,
+    due: "Overdue",
+  },
+  { label: "Buy groceries", priority: "low", done: false, due: "Tomorrow" },
+  { label: "Clean inbox", priority: "medium", done: false, due: "Today" },
+  { label: "Call mom", priority: "high", done: false, due: "Yesterday" },
+  { label: "Review budget", priority: "low", done: false, due: "Next week" },
+  { label: "Plan vacation", priority: "medium", done: false, due: "Someday" },
 ];
 
-// Hardcoded, not random — a random heatmap re-shuffles on every re-render.
-const heatmap = [
-  1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
-  0, 1,
+const beforeHabits = [
+  { name: "Exercise", streak: 1, total: 12 },
+  { name: "Read", streak: 0, total: 5 },
+  { name: "Meditate", streak: 2, total: 8 },
+  { name: "Journal", streak: 0, total: 3 },
+];
+
+const beforeHeatmap = [
+  0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+  0, 0,
 ].map(Boolean);
 
+// ---- After data: structured, motivating ----
+const afterTasks = [
+  {
+    label: "Draft investor update",
+    done: true,
+    priority: "high",
+    due: "Today",
+  },
+  { label: "Review PR #142", done: true, priority: "medium", due: "Today" },
+  {
+    label: "Outline onboarding flow",
+    done: true,
+    priority: "high",
+    due: "Today",
+  },
+  {
+    label: "Call Sarah re: pricing",
+    done: true,
+    priority: "medium",
+    due: "Today",
+  },
+  {
+    label: "Write changelog entry",
+    done: false,
+    priority: "low",
+    due: "Tomorrow",
+  },
+  { label: "Plan next sprint", done: false, priority: "medium", due: "Friday" },
+];
+
+const afterHabits = [
+  { name: "Exercise", streak: 18, total: 20 },
+  { name: "Read", streak: 12, total: 12 },
+  { name: "Meditate", streak: 9, total: 10 },
+  { name: "Journal", streak: 7, total: 8 },
+];
+
+const afterHeatmap = [
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1,
+].map(Boolean);
+
+// ---- Helper components ----
 function AtomMark({ className = "" }) {
   return (
     <svg
@@ -141,12 +231,28 @@ function OrbitDiagram() {
   );
 }
 
+// ---- The main Home component ----
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [viewMode, setViewMode] = useState("after"); // "before" | "after"
+
+  const tasks = viewMode === "before" ? beforeTasks : afterTasks;
+  const habits = viewMode === "before" ? beforeHabits : afterHabits;
+  const heatmap = viewMode === "before" ? beforeHeatmap : afterHeatmap;
+
+  const totalDone = tasks.filter((t) => t.done).length;
+  const totalTasks = tasks.length;
+  const completion =
+    totalTasks > 0 ? Math.round((totalDone / totalTasks) * 100) : 0;
+
+  // Determine if we are showing "before" or "after"
+  const isBefore = viewMode === "before";
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
+    <div className="min-h-screen bg-background text-foreground relative">
+      <Particles />
+
+      {/* Nav (unchanged) */}
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link
@@ -169,6 +275,12 @@ export default function Home() {
               className="transition-colors hover:text-foreground"
             >
               Preview
+            </a>
+            <a
+              href="#before-after"
+              className="transition-colors hover:text-foreground"
+            >
+              Before / After
             </a>
           </nav>
 
@@ -220,6 +332,13 @@ export default function Home() {
             >
               Preview
             </a>
+            <a
+              href="#before-after"
+              onClick={() => setMenuOpen(false)}
+              className="block py-2 text-sm text-muted-foreground"
+            >
+              Before / After
+            </a>
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
@@ -238,7 +357,7 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero */}
+      {/* Hero section (unchanged) */}
       <section className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0 -z-10"
@@ -287,7 +406,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Three-step loop */}
+      {/* Three-step loop (unchanged) */}
       <section
         id="how-it-works"
         className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24"
@@ -337,41 +456,61 @@ export default function Home() {
         </ol>
       </section>
 
-      {/* Product preview */}
+      {/* --- BEFORE / AFTER SECTION --- */}
       <section
-        id="preview"
+        id="before-after"
         className="border-y border-border/70 bg-muted/30 py-20 sm:py-24"
       >
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
-          <div>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Built for follow-through
+              The transformation
             </span>
             <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
-              See today, not someday
+              Before &amp; After
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              The dashboard shows exactly what&apos;s due right now and how your
-              streaks are holding up — nothing else competes for your attention.
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+              See how AtomicTask takes the chaos and turns it into clarity.
             </p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {[
-                "Atomic subtasks with one-tap complete",
-                "Daily streak tracking per habit",
-                "Light and dark mode, matched to your system",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2.5">
-                  <Check
-                    className="mt-0.5 size-4 shrink-0"
-                    style={{ color: "var(--accent-atomic)" }}
-                  />
-                  <span className="text-muted-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          <div className="relative">
+          {/* Toggle switch */}
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <span
+              className={`text-sm font-medium transition-colors ${
+                isBefore ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              Before
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={!isBefore}
+              onClick={() => setViewMode(isBefore ? "after" : "before")}
+              className="relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              style={{
+                background: isBefore ? "var(--muted)" : "var(--accent-atomic)",
+              }}
+            >
+              <span
+                className="pointer-events-none inline-block size-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+                style={{
+                  transform: isBefore ? "translateX(0)" : "translateX(28px)",
+                }}
+              />
+            </button>
+            <span
+              className={`text-sm font-medium transition-colors ${
+                !isBefore ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              After
+            </span>
+          </div>
+
+          {/* Content card with smooth transition */}
+          <div className="mt-8 relative">
             <div
               className="absolute -inset-6 -z-10 rounded-3xl blur-3xl"
               style={{
@@ -379,66 +518,197 @@ export default function Home() {
                   "color-mix(in oklch, var(--accent-atomic) 18%, transparent)",
               }}
             />
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-lg">
-              <div className="flex items-center justify-between border-b border-border/70 pb-3">
-                <span className="text-sm font-semibold">Today</span>
-                <span className="text-xs text-muted-foreground">
-                  4 of 6 done
-                </span>
-              </div>
-              <ul className="mt-3 space-y-2.5">
-                {mockTasks.map((t) => (
-                  <li
-                    key={t.label}
-                    className="flex items-center gap-3 rounded-lg px-2 py-2 text-sm"
-                  >
-                    <span
-                      className={`flex size-4 items-center justify-center rounded-full border ${
-                        t.done ? "border-transparent" : "border-border"
-                      }`}
-                      style={
-                        t.done
-                          ? { background: "var(--accent-atomic)" }
-                          : undefined
-                      }
-                    >
-                      {t.done && (
-                        <Check
-                          className="size-3"
-                          style={{ color: "var(--accent-atomic-foreground)" }}
-                        />
-                      )}
+            <div
+              className="rounded-2xl border border-border bg-card p-6 shadow-lg transition-all duration-500 ease-in-out"
+              style={{
+                transform: isBefore ? "scale(0.98)" : "scale(1)",
+                opacity: 1,
+              }}
+            >
+              <div className="grid gap-8 md:grid-cols-2">
+                {/* Left: Task list */}
+                <div>
+                  <div className="flex items-center justify-between border-b border-border/70 pb-3">
+                    <span className="text-sm font-semibold">
+                      {isBefore ? "Cluttered tasks" : "Today's priorities"}
                     </span>
-                    <span
-                      className={
-                        t.done ? "text-muted-foreground line-through" : ""
-                      }
-                    >
-                      {t.label}
+                    <span className="text-xs text-muted-foreground">
+                      {completion}% done
                     </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-5 border-t border-border/70 pt-4">
-                <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>22-day streak</span>
-                  <Flame
-                    className="size-3.5"
-                    style={{ color: "var(--accent-atomic)" }}
-                  />
+                  </div>
+                  <ul className="mt-4 space-y-2.5">
+                    {tasks.map((t) => {
+                      const isOverdue =
+                        t.due === "Overdue" || t.due === "Yesterday";
+                      return (
+                        <li
+                          key={t.label}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                            isBefore
+                              ? "bg-muted/30 hover:bg-muted/50"
+                              : "hover:bg-muted/30"
+                          }`}
+                        >
+                          <span
+                            className={`flex size-4 items-center justify-center rounded-full border ${
+                              t.done ? "border-transparent" : "border-border"
+                            }`}
+                            style={
+                              t.done
+                                ? { background: "var(--accent-atomic)" }
+                                : undefined
+                            }
+                          >
+                            {t.done && (
+                              <Check
+                                className="size-3"
+                                style={{
+                                  color: "var(--accent-atomic-foreground)",
+                                }}
+                              />
+                            )}
+                          </span>
+                          <span
+                            className={`flex-1 ${
+                              t.done ? "text-muted-foreground line-through" : ""
+                            } ${isBefore && !t.done && isOverdue ? "text-destructive" : ""}`}
+                          >
+                            {t.label}
+                          </span>
+                          {isBefore && !t.done && (
+                            <span
+                              className={`text-[10px] font-medium ${
+                                isOverdue
+                                  ? "text-destructive"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {t.due}
+                            </span>
+                          )}
+                          {!isBefore && !t.done && t.priority && (
+                            <span
+                              className="text-[10px] font-medium"
+                              style={{
+                                color:
+                                  t.priority === "high"
+                                    ? "var(--accent-atomic)"
+                                    : "var(--muted-foreground)",
+                              }}
+                            >
+                              {t.priority}
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {isBefore && (
+                    <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <AlertCircle className="size-3.5" />
+                      <span>3 tasks overdue — stress building up</span>
+                    </p>
+                  )}
+                  {!isBefore && (
+                    <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <Zap
+                        className="size-3.5"
+                        style={{ color: "var(--accent-atomic)" }}
+                      />
+                      <span>All high‑priority tasks completed</span>
+                    </p>
+                  )}
                 </div>
-                <div className="grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
-                  {heatmap.map((filled, i) => (
-                    <span
-                      key={i}
-                      className="aspect-square rounded-[3px]"
-                      style={{
-                        background: filled
-                          ? "var(--accent-atomic)"
-                          : "var(--muted)",
-                      }}
-                    />
-                  ))}
+
+                {/* Right: Habits and streak */}
+                <div>
+                  <div className="flex items-center justify-between border-b border-border/70 pb-3">
+                    <span className="text-sm font-semibold">
+                      {isBefore ? "Scattered habits" : "Active habits"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {isBefore
+                        ? "0 streaks"
+                        : `${habits.filter((h) => h.streak > 0).length} streaks`}
+                    </span>
+                  </div>
+                  <ul className="mt-4 space-y-3">
+                    {habits.map((h) => (
+                      <li
+                        key={h.name}
+                        className="flex items-center justify-between rounded-lg px-3 py-2 text-sm"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span
+                            className={`inline-block size-2 rounded-full ${
+                              h.streak > 0
+                                ? isBefore
+                                  ? "bg-muted-foreground/30"
+                                  : "bg-accent-atomic"
+                                : "bg-muted-foreground/20"
+                            }`}
+                          />
+                          {h.name}
+                        </span>
+                        <span
+                          className={`text-xs font-medium ${
+                            h.streak > 0
+                              ? isBefore
+                                ? "text-muted-foreground"
+                                : "text-accent-atomic"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {isBefore
+                            ? `${h.streak}/${h.total}`
+                            : `${h.streak} days`}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Heatmap */}
+                  <div className="mt-5 border-t border-border/70 pt-4">
+                    <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+                      <span>
+                        {isBefore ? "Inconsistent activity" : "22‑day streak"}
+                      </span>
+                      <Flame
+                        className="size-3.5"
+                        style={{
+                          color: isBefore
+                            ? "var(--muted-foreground)"
+                            : "var(--accent-atomic)",
+                        }}
+                      />
+                    </div>
+                    <div className="grid grid-cols-[repeat(14,minmax(0,1fr))] gap-1">
+                      {heatmap.map((filled, i) => (
+                        <span
+                          key={i}
+                          className="aspect-square rounded-[3px] transition-colors"
+                          style={{
+                            background: filled
+                              ? isBefore
+                                ? "var(--muted-foreground)"
+                                : "var(--accent-atomic)"
+                              : "var(--muted)",
+                            opacity: isBefore && filled ? 0.5 : 1,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* CTA inside card */}
+                  {!isBefore && (
+                    <div className="mt-6 flex justify-end">
+                      <Link to="/signup" className="cta-button-sm">
+                        Start your transformation
+                        <ArrowRight className="size-3.5" />
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -446,7 +716,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA band */}
+      {/* Final CTA band (unchanged) */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-foreground px-6 py-16 text-center text-background sm:px-16">
           <div
@@ -477,7 +747,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer (unchanged) */}
       <footer className="border-t border-border/70">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:px-6">
           <div className="flex items-center gap-2 font-heading font-semibold text-foreground">
