@@ -9,3 +9,4 @@ export const redisPort = process.env.REDIS_PORT || "6379";
 export const redisPassword = process.env.REDIS_PASSWORD || undefined;
 export const redisDB = process.env.REDIS_DB || 0;
 export const redisTLS = process.env.REDIS_TLS === "true";
+export const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
