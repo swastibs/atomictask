@@ -20,15 +20,12 @@ export default function ThemeToggle({ className = "", onThemeChange }) {
     const root = document.documentElement;
     root.classList.toggle("dark", theme === "dark");
     root.style.colorScheme = theme;
+    window.localStorage.setItem(STORAGE_KEY, theme);
     onThemeChange?.(theme);
   }, [theme, onThemeChange]);
 
   const toggleTheme = () => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      window.localStorage.setItem(STORAGE_KEY, next);
-      return next;
-    });
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
