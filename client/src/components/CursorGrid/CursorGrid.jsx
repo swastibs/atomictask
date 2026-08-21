@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import usePerformance from "@/hooks/usePerformance";
 import "./CursorGrid.css";
 
 const FALLOFF_CURVES = {
@@ -66,6 +67,7 @@ const CursorGrid = ({
   global = false,
   scrollEffect = false,
 }) => {
+  const { lowSpec, reducedMotion } = usePerformance();
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const propsRef = useRef({});
@@ -91,26 +93,28 @@ const CursorGrid = ({
     return () => observer.disconnect();
   }, [color]);
 
-  propsRef.current = {
-    cellSize,
-    radius,
-    falloff,
-    holdTime,
-    fadeDuration,
-    lineWidth,
-    maxOpacity,
-    fillOpacity,
-    gridOpacity,
-    cellRadius,
-    clickPulse,
-    pulseSpeed,
-    scrollEffect,
-  };
+  useEffect(() => {
+    propsRef.current = {
+      cellSize,
+      radius,
+      falloff,
+      holdTime,
+      fadeDuration,
+      lineWidth,
+      maxOpacity,
+      fillOpacity,
+      gridOpacity,
+      cellRadius,
+      clickPulse,
+      pulseSpeed,
+      scrollEffect,
+    };
+  }, [cellSize, radius, falloff, holdTime, fadeDuration, lineWidth, maxOpacity, fillOpacity, gridOpacity, cellRadius, clickPulse, pulseSpeed, scrollEffect]);
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    if (!container || !canvas) return;
+    if (!container || !canvas || reducedMotion || lowSpec) return;
 
     const ctx = canvas.getContext("2d");
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -126,7 +130,8 @@ const CursorGrid = ({
     const pulses = [];
     let raf = 0,
       running = false,
-      lastFrame = 0;
+      lastFrame = 0,
+      isVisible = true;
 
     const rebuild = () => {
       const p = propsRef.current;
@@ -302,12 +307,19 @@ const CursorGrid = ({
     };
 
     const wake = () => {
-      if (running) return;
+      if (running || !isVisible) return;
       running = true;
       lastFrame = performance.now();
       raf = requestAnimationFrame(draw);
     };
     wakeRef.current = wake;
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) wake();
+      else cancelAnimationFrame(raf);
+    }, { threshold: 0 });
+    visibilityObserver.observe(container);
 
     const toLocal = (clientX, clientY) => {
       const rect = canvas.getBoundingClientRect();
@@ -358,14 +370,14 @@ const CursorGrid = ({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      visibilityObserver.disconnect();
       target.removeEventListener("pointermove", onPointerMove);
       target.removeEventListener("pointerdown", onPointerDown);
       if (scrollEffect) {
         window.removeEventListener("scroll", onScroll);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cellSize, global, scrollEffect]);
+  }, [cellSize, global, lowSpec, reducedMotion, scrollEffect]);
 
   useEffect(() => {
     wakeRef.current?.();

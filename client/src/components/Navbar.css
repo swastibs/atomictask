@@ -1,0 +1,24 @@
+.site-nav-shell { position: fixed; inset: 0 0 auto; z-index: 50; display: flex; justify-content: center; padding: 0; pointer-events: none; transition: padding .3s ease; }
+.site-nav { display: flex; width: 100%; min-height: 4rem; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem max(1rem, calc((100vw - 72rem) / 2)); border-bottom: 1px solid color-mix(in oklch, var(--border) 82%, transparent); background: color-mix(in oklch, var(--background) 85%, transparent); backdrop-filter: blur(16px); box-shadow: 0 1px 0 color-mix(in oklch, var(--foreground) 3%, transparent); pointer-events: auto; transition: max-width .32s cubic-bezier(.22, 1, .36, 1), min-height .32s ease, padding .32s ease, border-radius .32s ease, border-color .32s ease, box-shadow .32s ease, background .32s ease; }
+.site-nav-shell.is-scrolled { padding: .75rem 1rem 0; }
+.site-nav-shell.is-scrolled .site-nav { width: min(100%, 1080px); min-height: 3.35rem; padding: .45rem 1rem; border: 1px solid color-mix(in oklch, var(--border) 92%, transparent); border-radius: 999px; background: color-mix(in oklch, var(--card) 80%, transparent); box-shadow: 0 16px 40px color-mix(in oklch, var(--foreground) 13%, transparent); }
+.site-nav-brand, .site-nav-links, .site-nav-actions, .site-nav-profile, .site-nav-logout, .site-nav-cta { display: flex; align-items: center; }
+.site-nav-brand { flex: 0 0 auto; gap: .5rem; color: var(--foreground); font: 600 1.05rem var(--font-heading); letter-spacing: -.03em; text-decoration: none; }
+.site-nav-brand svg { width: 1.3rem; height: 1.3rem; color: var(--accent-atomic); }
+.site-nav-links { position: absolute; left: 50%; gap: 1.6rem; transform: translateX(-50%); }
+.site-nav-links a, .site-nav-login { position: relative; color: var(--muted-foreground); font-size: .76rem; font-weight: 700; text-decoration: none; transition: color .2s ease; }
+.site-nav-links a::after { position: absolute; right: 0; bottom: -.35rem; left: 0; height: 1px; background: var(--accent-atomic); content: ""; transform: scaleX(0); transition: transform .2s ease; }
+.site-nav-links a:hover, .site-nav-login:hover { color: var(--foreground); }
+.site-nav-links a:hover::after { transform: scaleX(1); }
+.site-nav-actions { gap: .55rem; min-width: 0; }
+.site-nav-theme { border-radius: 999px; }
+.site-nav-note { display: inline-flex; max-width: 190px; align-items: center; gap: .32rem; overflow: hidden; color: var(--muted-foreground); font-size: .64rem; font-style: italic; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.site-nav-note svg { width: .8rem; height: .8rem; flex: 0 0 auto; color: var(--accent-atomic); }
+.site-nav-cta { gap: .35rem; padding: .55rem .8rem; border-radius: 999px; background: var(--accent-atomic); color: var(--accent-atomic-foreground); font-size: .7rem; font-weight: 800; text-decoration: none; transition: filter .2s ease, transform .2s ease; }
+.site-nav-cta:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.site-nav-cta svg { width: .85rem; height: .85rem; }
+.site-nav-profile { gap: .35rem; color: var(--muted-foreground); font-size: .72rem; font-weight: 700; text-decoration: none; }
+.site-nav-profile svg, .site-nav-logout svg { width: .9rem; height: .9rem; }
+.site-nav-logout { gap: .3rem; padding: .35rem; border: 0; background: transparent; color: var(--muted-foreground); font: 700 .68rem var(--font-sans); cursor: pointer; transition: color .2s ease; }
+.site-nav-logout:hover { color: var(--destructive); }
+@media (max-width: 760px) { .site-nav { padding-inline: 1rem; } .site-nav-links, .site-nav-note, .site-nav-login, .site-nav-profile span, .site-nav-logout span { display: none; } .site-nav-actions { margin-left: auto; } .site-nav-shell.is-scrolled { padding-inline: .6rem; } .site-nav-shell.is-scrolled .site-nav { width: 100%; padding-inline: .85rem; } }

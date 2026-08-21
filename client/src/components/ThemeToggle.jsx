@@ -12,7 +12,7 @@ const getInitialTheme = () => {
     : "light";
 };
 
-export default function ThemeToggle({ className = "" }) {
+export default function ThemeToggle({ className = "", onThemeChange }) {
   const [theme, setTheme] = useState(getInitialTheme);
   const isDark = theme === "dark";
 
@@ -20,7 +20,8 @@ export default function ThemeToggle({ className = "" }) {
     const root = document.documentElement;
     root.classList.toggle("dark", theme === "dark");
     root.style.colorScheme = theme;
-  }, [theme]);
+    onThemeChange?.(theme);
+  }, [theme, onThemeChange]);
 
   const toggleTheme = () => {
     setTheme((prev) => {

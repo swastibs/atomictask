@@ -1,27 +1,21 @@
-import { createContext, useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
-  getToken,
   setToken,
   removeToken,
   getUserFromToken,
   isTokenValid,
 } from "../utils/token";
 import axiosInstance from "../api/axios";
-
-export const AuthContext = createContext(null);
+import { AuthContext } from "./auth-context";
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (isTokenValid()) {
-      setUser(getUserFromToken());
-    } else {
+  const [user, setUser] = useState(() => {
+    if (!isTokenValid()) {
       removeToken();
+      return null;
     }
-    setLoading(false);
-  }, []);
+    return getUserFromToken();
+  });
 
   const login = useCallback(async (email, password) => {
     const response = await axiosInstance.post("/auth/login", {
@@ -56,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    loading,
+    loading: false,
     login,
     signup,
     logout,
