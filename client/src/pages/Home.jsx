@@ -18,6 +18,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import CursorGrid from "@/components/CursorGrid/CursorGrid";
 import HabitTrackerModule from "@/components/HabitTrackerModule/HabitTrackerModule";
 import AITaskTrackerModule from "@/components/AITaskTrackerModule/AITaskTrackerModule";
+import LandingSections from "@/components/LandingSections/LandingSections";
 
 // ============================================================
 // Background decorative layer
@@ -1305,6 +1306,8 @@ export default function Home() {
       {/* ======================================================
           CTA
       ====================================================== */}
+
+        <LandingSections />
 
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-foreground px-6 py-16 text-center text-background sm:px-16">
