@@ -17,6 +17,7 @@ import {
 import ThemeToggle from "@/components/ThemeToggle";
 import CursorGrid from "@/components/CursorGrid/CursorGrid";
 import HabitTrackerModule from "@/components/HabitTrackerModule/HabitTrackerModule";
+import AITaskTrackerModule from "@/components/AITaskTrackerModule/AITaskTrackerModule";
 
 // ============================================================
 // Background decorative layer
@@ -1090,7 +1091,10 @@ export default function Home() {
           PRODUCT PREVIEW
       ====================================================== */}
 
-      <HabitTrackerModule />
+      <div className="grid gap-0 lg:grid-cols-2">
+        <HabitTrackerModule />
+        <AITaskTrackerModule />
+      </div>
 
       <section
         id="preview"
