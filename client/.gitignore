@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+a.cjs
+allcode.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,3 +25,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Environment configuration
+**/.env
+.env.production.local
+
+# VS Code Configuration
+**/.vscode/
