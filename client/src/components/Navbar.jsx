@@ -73,6 +73,8 @@ export default function Navbar() {
     ]
     : [
       ["Dashboard", "/dashboard"],
+      ["Trash", "/tasks/trash"],
+      ["Stats", "/stats"],
       ["Profile", "/profile"],
     ];
 

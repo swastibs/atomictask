@@ -1,16 +1,36 @@
-# React + Vite
+# AtomicTask client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AtomicTask is a responsive task workspace backed by the AtomicTask REST API.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm install
+cp .env.example .env
+npm run dev
+```
 
-## React Compiler
+Set `VITE_API_BASE_URL` to the backend origin including `/api`, for example
+`http://localhost:8080/api`. Production builds are static: `npm run build`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quality checks
 
-## Expanding the ESLint configuration
+Run `npm run lint` and `npm run build` before deployment. The client uses React,
+Vite, Axios, React Router, accessible local UI primitives, and cancellable API
+requests for search.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## API assumptions
+
+Task screens use `/tasks`, `/tasks/:id`, `/tasks/stats`, `/tasks/trash`, CRUD,
+restore/permanent delete, bulk operations, comments, and subtasks. The backend
+currently implements bulk update as `POST /tasks/bulk-update`; the client follows
+that route. There is no user directory endpoint, so assignees are entered as
+comma-separated user IDs and populated names are displayed when returned by the API.
+
+## Authentication security
+
+The existing JWT flow stores the token in `localStorage` because the backend has
+no refresh endpoint. This is vulnerable to token theft if an XSS vulnerability is
+introduced; React escaping and input validation reduce that risk, but an HttpOnly
+cookie-based session is preferable for a future backend revision. The Axios
+response interceptor clears expired tokens and redirects on HTTP 401.

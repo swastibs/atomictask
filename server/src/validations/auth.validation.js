@@ -9,15 +9,15 @@ const email = Joi.string()
   });
 
 const password = Joi.string().min(4).max(32).messages({
-  "string.min": "Password must be at least 8 characters long",
+  "string.min": "Password must be at least 4 characters long",
   "string.max": "Password cannot exceed 32 characters",
 });
 
 const strongPassword = Joi.string()
-  .min(8)
+  .min(4)
   .max(72)
   .messages({
-    "string.min": "Password must be at least 8 characters long",
+    "string.min": "Password must be at least 4 characters long",
     "string.max": "Password cannot exceed 72 characters",
   });
 
