@@ -18,13 +18,13 @@ const authRouter = express.Router();
 
 authRouter.post(
   "/signup",
-  validate(signUpSchema, {}, { abortEarly: false }),
+  validate(signUpSchema, {}, { abortEarly: false, stripUnknown: true }),
   signUp,
 );
 
 authRouter.post(
   "/login",
-  validate(loginSchema, {}, { abortEarly: false }),
+  validate(loginSchema, {}, { abortEarly: false, stripUnknown: true }),
   login,
 );
 
@@ -33,7 +33,7 @@ authRouter.post("/logout", authenticate, logout);
 authRouter.post(
   "/update-password",
   authenticate,
-  validate(updatePasswordSchema, {}, { abortEarly: false }),
+  validate(updatePasswordSchema, {}, { abortEarly: false, stripUnknown: true }),
   updatePassword,
 );
 
