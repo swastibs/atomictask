@@ -1,0 +1,98 @@
+================================================================
+  API TEST REPORT
+  Generated : 2026-08-22T09:18:38.409Z
+  Base URL  : http://localhost:8080/api
+================================================================
+
+MODULE: AUTH MODULE
+----------------------------------------------------------------
+[PASS] Signup - fails when name is missing (27ms)
+[PASS] Signup - fails when email is invalid (3ms)
+[PASS] Signup - fails when password is too short (1ms)
+[PASS] Signup - fails on unknown field (3ms)
+[PASS] Signup - succeeds with valid data (86ms)
+[PASS] Signup - fails when email already exists (3ms)
+[PASS] Login - fails when password is missing (2ms)
+[PASS] Login - fails with wrong password (70ms)
+[PASS] Login - fails for unregistered email (266ms)
+[PASS] Login - succeeds and returns a token (72ms)
+[PASS] Logout - fails without token (1ms)
+[PASS] Logout - succeeds with valid token (4ms)
+[PASS] Logout - blacklisted token cannot access profile (4ms)
+[PASS] Login again to get fresh token (69ms)
+[PASS] Update password - fails without token (5ms)
+[PASS] Update password - fails when confirmation does not match (5ms)
+[PASS] Update password - fails with wrong current password (74ms)
+[PASS] Update password - succeeds (135ms)
+[PASS] Old token is blacklisted after password update (2ms)
+[PASS] Login with new password (69ms)
+MODULE: USER MODULE
+----------------------------------------------------------------
+[PASS] Get profile - succeeds (2ms)
+[PASS] Admin dashboard - fails for normal user (2ms)
+MODULE: HEALTH MODULE
+----------------------------------------------------------------
+[PASS] Health check returns uptime (1ms)
+MODULE: TASK MODULE - CRUD
+----------------------------------------------------------------
+[PASS] Create task - fails without token (1ms)
+[PASS] Create task - fails when title is missing (4ms)
+[PASS] Create task - fails on unknown field (3ms)
+[PASS] Create task - fails with invalid priority (3ms)
+[PASS] Create task - fails with past due date (9ms)
+[PASS] Create task - succeeds with valid data (6ms)
+[PASS] Get tasks - returns array (10ms)
+[PASS] Get tasks - filter by status (6ms)
+[PASS] Get tasks - filter by priority (5ms)
+[PASS] Get tasks - filter by dueDate (4ms)
+[PASS] Get tasks - invalid status filter (4ms)
+[PASS] Get single task - succeeds (5ms)
+[PASS] Get single task - malformed id (3ms)
+[PASS] Get single task - non-existent id (4ms)
+[PASS] Update task - succeeds (10ms)
+[PASS] Update task - invalid status (3ms)
+[PASS] Update task - non-existent (5ms)
+[PASS] Update task to completed sets completedAt (6ms)
+[PASS] Update task to pending clears completedAt (6ms)
+[PASS] Delete task - soft delete (7ms)
+[PASS] Delete task again - fails (404) (4ms)
+[PASS] Get trash - contains deleted task (4ms)
+[PASS] Restore task - succeeds (7ms)
+[PASS] Restore task again - fails (404) (4ms)
+MODULE: TASK MODULE - SUBTASKS
+----------------------------------------------------------------
+[PASS] Create subtask - succeeds with valid parentTask (6ms)
+[PASS] Create subtask - invalid parentTask id (3ms)
+[PASS] Get subtasks - returns list (5ms)
+[PASS] Get subtasks - non-existent parent (4ms)
+[PASS] Get subtasks - malformed parent id (2ms)
+MODULE: TASK MODULE - BULK OPERATIONS
+----------------------------------------------------------------
+[PASS] Create two tasks for bulk operations (8ms)
+[PASS] Bulk update - empty ids array (3ms)
+[PASS] Bulk update - empty updateData (3ms)
+[PASS] Bulk update - succeeds (6ms)
+[PASS] Bulk delete - empty ids array (3ms)
+[PASS] Bulk delete - succeeds (7ms)
+MODULE: TASK MODULE - STATS
+----------------------------------------------------------------
+[PASS] Get task stats (8ms)
+MODULE: TASK MODULE - PERMANENT DELETE
+----------------------------------------------------------------
+[PASS] Permanent delete - malformed id (3ms)
+[PASS] Permanent delete - succeeds for task without subtasks (11ms)
+[PASS] Permanent delete - fails when task has subtasks (4ms)
+[PASS] Permanent delete - non-existent task (4ms)
+MODULE: SECURITY / EDGE CASES
+----------------------------------------------------------------
+[PASS] IDOR - cannot set parentTask to another user's task (144ms)
+[PASS] Self-reference parentTask is rejected (9ms)
+[PASS] Cycle detection - A→B→A should fail (5ms)
+[PASS] Bulk array size limit - >100 IDs should fail (3ms)
+[PASS] Request body size limit - large JSON should be rejected (2ms)
+[PASS] Login timing - non-existent user should have similar response time (539ms)
+
+================================================================
+SUMMARY
+Total: 69 | Passed: 69 | Failed: 0 | Success Rate: 100%
+================================================================

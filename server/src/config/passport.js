@@ -20,9 +20,16 @@ passport.use(
         _id: jwtPayload.id,
         isDeleted: false,
         isActive: true,
-      });
+      }).select("+sessionVersion");
 
       if (!user) {
+        return done(null, false);
+      }
+
+      if (
+        jwtPayload.sessionVersion !== undefined &&
+        jwtPayload.sessionVersion !== (user.sessionVersion || 0)
+      ) {
         return done(null, false);
       }
 

@@ -1,7 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   setToken,
   removeToken,
+  getToken,
   getUserFromToken,
   isTokenValid,
 } from "../utils/token";
@@ -16,6 +17,17 @@ export const AuthProvider = ({ children }) => {
     }
     return getUserFromToken();
   });
+
+  useEffect(() => {
+    if (!getToken()) return undefined;
+    let active = true;
+    axiosInstance.get("/auth/me").then((response) => {
+      if (active) setUser(response.data.data);
+    }).catch(() => {
+      // The axios interceptor handles invalid sessions.
+    });
+    return () => { active = false; };
+  }, []);
 
   const login = useCallback(async (email, password) => {
     const response = await axiosInstance.post("/auth/login", {
@@ -55,6 +67,7 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     isAuthenticated: !!user,
+    updateUser: setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

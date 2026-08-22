@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 const STORAGE_KEY = "atomictask-theme";
+const THEME_EVENT = "atomictask-theme-change";
 
 const getInitialTheme = () => {
   if (typeof window === "undefined") return "light";
@@ -17,15 +18,22 @@ export default function ThemeToggle({ className = "", onThemeChange }) {
   const isDark = theme === "dark";
 
   useEffect(() => {
+    const syncTheme = (event) => {
+      if (event.detail === "light" || event.detail === "dark") setTheme(event.detail);
+    };
+    window.addEventListener(THEME_EVENT, syncTheme);
     const root = document.documentElement;
     root.classList.toggle("dark", theme === "dark");
     root.style.colorScheme = theme;
     window.localStorage.setItem(STORAGE_KEY, theme);
     onThemeChange?.(theme);
+    return () => window.removeEventListener(THEME_EVENT, syncTheme);
   }, [theme, onThemeChange]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    window.localStorage.setItem(STORAGE_KEY, nextTheme);
+    window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: nextTheme }));
   };
 
   return (
