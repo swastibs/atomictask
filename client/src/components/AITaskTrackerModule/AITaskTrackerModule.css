@@ -147,9 +147,9 @@
   font: 600 0.7rem var(--font-sans);
 }
 .ai-date-controls .ai-today-button {
-  width: auto;
-  padding: 0 0.55rem;
-  font: 700 0.67rem var(--font-sans);
+  padding: 0 2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 .ai-content {
   display: grid;
