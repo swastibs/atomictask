@@ -15,6 +15,7 @@ import {
 import Navbar from "@/components/Navbar";
 import CursorGrid from "@/components/CursorGrid/CursorGrid";
 import DeferredModule from "@/components/DeferredModule";
+import usePerformance from "@/hooks/usePerformance";
 
 const HabitTrackerModule = lazy(
   () => import("@/components/HabitTrackerModule/HabitTrackerModule"),
@@ -27,8 +28,12 @@ const AITaskTrackerModule = lazy(
 // Background decorative layer
 // ============================================================
 
-function BackgroundDecor({ viewMode }) {
+function BackgroundDecor({ viewMode, animationEnabled }) {
   const isBefore = viewMode === "before";
+
+  if (!animationEnabled) {
+    return null;
+  }
 
   const shapes = [
     { x: 10, y: 15, size: 24, rot: 45 },
@@ -805,33 +810,24 @@ function InteractiveDemo({ viewMode }) {
 
 export default function Home() {
   const [viewMode, setViewMode] = useState("after");
+  const { animationEnabled } = usePerformance();
 
   const isBefore = viewMode === "before";
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      {/* Global CursorGrid */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <CursorGrid
-          global={true}
-          scrollEffect={true}
           cellSize={60}
           color="var(--accent-atomic)"
-          radius={140}
-          falloff="smooth"
-          holdTime={400}
-          fadeDuration={800}
-          lineWidth={1.2}
-          maxOpacity={0.4}
-          fillOpacity={0}
-          gridOpacity={0.05}
-          cellRadius={6}
-          clickPulse
-          pulseSpeed={600}
+          gridOpacity={0.15}
         />
       </div>
 
-      <BackgroundDecor viewMode={viewMode} />
+      <BackgroundDecor
+        viewMode={viewMode}
+        animationEnabled={animationEnabled}
+      />
 
       {/* ======================================================
           NAV
