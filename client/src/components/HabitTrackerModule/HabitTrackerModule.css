@@ -126,10 +126,11 @@
   font: 600 0.75rem var(--font-sans);
 }
 .today-button {
-  padding: 0 0.7rem;
+  padding: 0 2rem;
   font-size: 0.72rem;
   font-weight: 700;
 }
+
 .tracker-content {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);

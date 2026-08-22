@@ -50,13 +50,14 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!isDark) {
-      const randomIndex = Math.floor(Math.random() * sarcasticMessages.length);
-      setMessage(sarcasticMessages[randomIndex]);
-      const timer = setTimeout(() => setShowMessage(true), 800);
+      const timer = setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * sarcasticMessages.length);
+        setMessage(sarcasticMessages[randomIndex]);
+        setShowMessage(true);
+      }, 800);
       return () => clearTimeout(timer);
-    } else {
-      setShowMessage(false);
     }
+    return undefined;
   }, [isDark]);
 
   const handleLogout = async () => {
@@ -64,20 +65,16 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  let links = [];
-  if (showLandingLinks) {
-    links = [
+  const links = showLandingLinks
+    ? [
       ["How it works", "#how-it-works"],
       ["Tasks", "#ai-tasks"],
       ["Habits", "#habits"],
-    ];
-  } else {
-    // For dashboard, profile, admin (authenticated pages)
-    links = [
+    ]
+    : [
       ["Dashboard", "/dashboard"],
       ["Profile", "/profile"],
     ];
-  }
 
   return (
     <div className="sticky top-4 z-50 flex w-full flex-col items-center px-4 transition-all duration-300">
