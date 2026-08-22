@@ -1,11 +1,14 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { randomUUID } from "crypto";
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import { jwtSecret } from "../config/envConfig.js";
 import { successResponse } from "../utils/response.js";
 import { addToBlacklist } from "../utils/tokenBlacklist.js";
+
+const DUMMY_PASSWORD_HASH = "$2b$12$C6UzMDM.H6dfI/f/IKcEe.2N4pY8z8N9qz7S8FQ6g0j2p0o5J7Z7G";
 
 const sanitizeUser = (user) => {
   const userObj = user.toObject();
@@ -19,9 +22,10 @@ const sanitizeUser = (user) => {
 };
 
 export const signUp = catchAsync(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, username, email, password } = req.body;
+  const normalizedEmail = email.toLowerCase().trim();
 
-  const existingEmail = await User.findOne({ email });
+  const existingEmail = await User.findOne({ email: normalizedEmail });
   if (existingEmail) {
     throw new ApiError(409, "Email already exists");
   }
@@ -30,7 +34,8 @@ export const signUp = catchAsync(async (req, res) => {
 
   const createdUser = await User.create({
     name,
-    email,
+    username,
+    email: normalizedEmail,
     password: hashedPassword,
   });
 
@@ -44,19 +49,20 @@ export const signUp = catchAsync(async (req, res) => {
 });
 
 export const login = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
 
   if (!jwtSecret) {
     throw new ApiError(500, "JWT secret is not configured");
   }
 
   const user = await User.findOne({
-    email,
+    ...(email ? { email: email.toLowerCase().trim() } : { username: username.toLowerCase().trim() }),
     isDeleted: false,
     isActive: true,
-  }).select("+password");
+  }).select("+password +sessionVersion");
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  const passwordMatches = await bcrypt.compare(password, user?.password || DUMMY_PASSWORD_HASH);
+  if (!user || !passwordMatches) {
     throw new ApiError(401, "Invalid credentials");
   }
 
@@ -64,6 +70,8 @@ export const login = catchAsync(async (req, res) => {
     id: user._id,
     email: user.email,
     role: user.role,
+    sessionVersion: user.sessionVersion || 0,
+    jti: randomUUID(),
   };
   const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: "1h" });
 
@@ -106,6 +114,7 @@ export const updatePassword = catchAsync(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   user.password = hashedPassword;
+  user.sessionVersion = (user.sessionVersion || 0) + 1;
   await user.save();
 
   const token = req.headers.authorization?.split(" ")[1];
@@ -119,4 +128,10 @@ export const updatePassword = catchAsync(async (req, res) => {
     statusCode: 200,
     message: "Password updated successfully",
   });
+});
+
+export const getMe = catchAsync(async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user) throw new ApiError(404, "User not found");
+  return successResponse(res, { message: "Current user fetched successfully", data: sanitizeUser(user) });
 });

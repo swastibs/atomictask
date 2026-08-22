@@ -8,10 +8,25 @@ const email = Joi.string()
     "string.email": "Please fill a valid email address",
   });
 
-const password = Joi.string().trim().min(4).max(32).messages({
-  "string.min": "Password must be at least 4 characters long",
+const password = Joi.string().min(4).max(32).messages({
+  "string.min": "Password must be at least 8 characters long",
   "string.max": "Password cannot exceed 32 characters",
 });
+
+const strongPassword = Joi.string()
+  .min(8)
+  .max(72)
+  .messages({
+    "string.min": "Password must be at least 8 characters long",
+    "string.max": "Password cannot exceed 72 characters",
+  });
+
+const username = Joi.string()
+  .trim()
+  .lowercase()
+  .min(3)
+  .max(30)
+  .pattern(/^[a-z0-9_]+$/);
 
 export const signUpSchema = {
   body: Joi.object({
@@ -21,11 +36,12 @@ export const signUpSchema = {
       "string.min": "Name cannot be empty",
       "string.max": "Name cannot exceed 100 characters",
     }),
+    username: username.optional(),
     email: email.required().messages({
       "any.required": "Email is required",
       "string.empty": "Email is required",
     }),
-    password: password.required().messages({
+    password: strongPassword.required().messages({
       "any.required": "Password is required",
       "string.empty": "Password is required",
     }),
@@ -37,7 +53,9 @@ export const signUpSchema = {
 
 export const loginSchema = {
   body: Joi.object({
-    email: email.required().messages({
+    email: email.optional(),
+    username: username.optional(),
+    password: password.required().messages({
       "any.required": "Email is required",
       "string.empty": "Email is required",
     }),
@@ -45,7 +63,7 @@ export const loginSchema = {
       "any.required": "Password is required",
       "string.empty": "Password is required",
     }),
-  }).unknown(false),
+  }).or("email", "username").unknown(false),
 
   params: Joi.object().max(0),
   query: Joi.object().max(0),
@@ -53,11 +71,11 @@ export const loginSchema = {
 
 export const updatePasswordSchema = {
   body: Joi.object({
-    currentPassword: Joi.string().trim().required().messages({
+    currentPassword: Joi.string().required().messages({
       "any.required": "Current password is required",
       "string.empty": "Current password is required",
     }),
-    newPassword: password.required().messages({
+    newPassword: strongPassword.required().messages({
       "any.required": "New password is required",
       "string.empty": "New password is required",
     }),
@@ -71,6 +89,16 @@ export const updatePasswordSchema = {
       }),
   }).unknown(false),
 
+  params: Joi.object().max(0),
+  query: Joi.object().max(0),
+};
+
+export const updateProfileSchema = {
+  body: Joi.object({
+    name: Joi.string().trim().min(1).max(100),
+    username: username,
+    avatar: Joi.string().uri({ scheme: ["http", "https"] }).max(500).allow(null, ""),
+  }).min(1).unknown(false),
   params: Joi.object().max(0),
   query: Joi.object().max(0),
 };

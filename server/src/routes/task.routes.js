@@ -14,6 +14,10 @@ import {
   getTrashTasks,
   getSubtasks,
   permanentDeleteTask,
+  addComment,
+  getComments,
+  addAssignees,
+  removeAssignee,
 } from "../controllers/task.controller.js";
 
 import {
@@ -27,12 +31,42 @@ import {
   getSubtasksSchema,
   bulkDeleteTasksSchema,
   bulkUpdateTasksSchema,
+  commentSchema,
+  assigneesSchema,
+  removeAssigneeSchema,
 } from "../validations/task.validation.js";
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(authenticate);
+
+router.post(
+  "/bulk-update",
+  validate(bulkUpdateTasksSchema, {}, { abortEarly: false, stripUnknown: true }),
+  bulkUpdateTasks,
+);
+
+router.post(
+  "/:id/comments",
+  validate(commentSchema, {}, { abortEarly: false, stripUnknown: true }),
+  addComment,
+);
+router.get(
+  "/:id/comments",
+  validate(getTaskSchema, {}, { abortEarly: false, stripUnknown: true }),
+  getComments,
+);
+router.post(
+  "/:id/assignees",
+  validate(assigneesSchema, {}, { abortEarly: false, stripUnknown: true }),
+  addAssignees,
+);
+router.delete(
+  "/:id/assignees/:userId",
+  validate(removeAssigneeSchema, {}, { abortEarly: false, stripUnknown: true }),
+  removeAssignee,
+);
 
 // ─── Statistics ───────────────────────────────────────────────
 router.get("/stats", getTaskStats);
@@ -97,6 +131,10 @@ router
     getTask,
   )
   .put(
+    validate(updateTaskSchema, {}, { abortEarly: false, stripUnknown: true }),
+    updateTask,
+  )
+  .patch(
     validate(updateTaskSchema, {}, { abortEarly: false, stripUnknown: true }),
     updateTask,
   )

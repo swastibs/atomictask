@@ -3,7 +3,7 @@ import ApiError from "./ApiError.js";
 import { errorResponse } from "./response.js";
 
 export const globalErrorHandler = (err, req, res, next) => {
-  console.error("ERROR:", err);
+  console.error("ERROR:", err?.stack || err?.message || String(err));
 
   if (err instanceof ValidationError) {
     const allMessages = Object.values(err.details || {})
@@ -19,6 +19,10 @@ export const globalErrorHandler = (err, req, res, next) => {
 
   if (err.type === "entity.parse.failed") {
     return errorResponse(res, 400, "Invalid JSON payload");
+  }
+
+  if (err.type === "entity.too.large") {
+    return errorResponse(res, 413, "Request payload too large");
   }
 
   if (err.code === 11000) {

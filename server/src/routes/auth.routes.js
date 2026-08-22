@@ -6,6 +6,7 @@ import {
   signUp,
   logout,
   updatePassword,
+  getMe,
 } from "../controllers/auth.controller.js";
 import {
   loginSchema,
@@ -13,6 +14,7 @@ import {
   updatePasswordSchema,
 } from "../validations/auth.validation.js";
 import { authenticate } from "../middlewares/auth.js";
+import { loginRateLimit } from "../middlewares/loginRateLimit.js";
 
 const authRouter = express.Router();
 
@@ -24,6 +26,7 @@ authRouter.post(
 
 authRouter.post(
   "/login",
+  loginRateLimit,
   validate(loginSchema, {}, { abortEarly: false, stripUnknown: true }),
   login,
 );
@@ -36,5 +39,14 @@ authRouter.post(
   validate(updatePasswordSchema, {}, { abortEarly: false, stripUnknown: true }),
   updatePassword,
 );
+
+authRouter.post(
+  "/change-password",
+  authenticate,
+  validate(updatePasswordSchema, {}, { abortEarly: false, stripUnknown: true }),
+  updatePassword,
+);
+
+authRouter.get("/me", authenticate, getMe);
 
 export default authRouter;

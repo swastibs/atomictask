@@ -8,6 +8,19 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: [true, "Name is required"],
     },
+    username: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      sparse: true,
+      minlength: [3, "Username must be at least 3 characters long"],
+      maxlength: [30, "Username cannot exceed 30 characters"],
+      match: [
+        /^[a-z0-9_]+$/,
+        "Username may contain only letters, numbers, and underscores",
+      ],
+    },
     email: {
       type: String,
       trim: true,
@@ -21,8 +34,13 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      minlength: [4, "Password must be at least 4 characters long"],
+      minlength: [8, "Password must be at least 8 characters long"],
       required: [true, "Password is required"],
+      select: false,
+    },
+    sessionVersion: {
+      type: Number,
+      default: 0,
       select: false,
     },
     avatar: { type: String },

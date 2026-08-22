@@ -15,12 +15,12 @@ const taskSchema = new mongoose.Schema(
     },
     priority: {
       type: String,
-      enum: ["low", "medium", "high"],
+      enum: ["low", "medium", "high", "urgent"],
       default: "medium",
     },
     status: {
       type: String,
-      enum: ["pending", "in-progress", "completed", "archived"],
+      enum: ["pending", "in-progress", "completed", "cancelled", "archived"],
       default: "pending",
     },
     dueDate: {
@@ -36,6 +36,22 @@ const taskSchema = new mongoose.Schema(
     actualTime: { type: Number, min: 0, default: 0 },
     tags: { type: [String], default: [] },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    assignees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    comments: [
+      {
+        author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        body: { type: String, required: true, trim: true, maxlength: 2000 },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    activity: [
+      {
+        actor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        action: { type: String, required: true, maxlength: 80 },
+        metadata: { type: mongoose.Schema.Types.Mixed, default: undefined },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     parentTask: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task",
@@ -53,20 +69,10 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// ─── Indexes for performance ────────────────────────────────
 taskSchema.index({ user: 1, isDeleted: 1 });
 taskSchema.index({ dueDate: 1 });
+taskSchema.index({ assignees: 1, isDeleted: 1 });
+taskSchema.index({ title: "text", description: "text", tags: "text" });
 
-// ─── Pre‑save hook: auto‑manage completedAt ────────────────
-taskSchema.pre("save", function (next) {
-  if (this.status === "completed" && !this.completedAt) {
-    this.completedAt = new Date();
-  }
-  if (this.status !== "completed" && this.completedAt) {
-    this.completedAt = null;
-  }
-  next();
-});
-
-const Task = mongoose.model("Task", taskSchema);
+const Task = mongoose.models.Task || mongoose.model("Task", taskSchema);
 export default Task;
