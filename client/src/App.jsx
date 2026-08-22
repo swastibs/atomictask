@@ -7,7 +7,6 @@ import Layout from "./components/Layout";
 const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const TaskDetail = lazy(() => import("./pages/TaskDetail"));
 const Trash = lazy(() => import("./pages/Trash"));
 const Stats = lazy(() => import("./pages/Stats"));
 const FocusPage = lazy(() => import("./pages/FocusPage"));
@@ -56,7 +55,6 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/tasks" element={<Dashboard />} />
                 <Route path="/tasks/trash" element={<Trash />} />
-                <Route path="/tasks/:id" element={<TaskDetail />} />
                 <Route path="/stats" element={<Stats />} />
                 <Route path="/habits" element={<FocusPage mode="habits" />} />
                 <Route path="/pomodoro" element={<FocusPage mode="pomodoro" />} />
