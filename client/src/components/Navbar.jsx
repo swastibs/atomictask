@@ -51,7 +51,9 @@ export default function Navbar() {
   useEffect(() => {
     if (!isDark) {
       const timer = setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * sarcasticMessages.length);
+        const randomIndex = Math.floor(
+          Math.random() * sarcasticMessages.length,
+        );
         setMessage(sarcasticMessages[randomIndex]);
         setShowMessage(true);
       }, 800);
@@ -67,16 +69,16 @@ export default function Navbar() {
 
   const links = showLandingLinks
     ? [
-      ["How it works", "#how-it-works"],
-      ["Tasks", "#ai-tasks"],
-      ["Habits", "#habits"],
-    ]
+        ["How it works", "#how-it-works"],
+        ["Tasks", "#ai-tasks"],
+        ["Habits", "#habits"],
+      ]
     : [
-      ["Dashboard", "/dashboard"],
-      ["Trash", "/tasks/trash"],
-      ["Stats", "/stats"],
-      ["Profile", "/profile"],
-    ];
+        ["Dashboard", "/dashboard"],
+        ["Trash", "/tasks/trash"],
+        ["Stats", "/stats"],
+        ["Profile", "/profile"],
+      ];
 
   return (
     <div className="sticky top-4 z-50 flex w-full flex-col items-center px-4 transition-all duration-300">

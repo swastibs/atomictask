@@ -21,12 +21,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (!getToken()) return undefined;
     let active = true;
-    axiosInstance.get("/auth/me").then((response) => {
-      if (active) setUser(response.data.data);
-    }).catch(() => {
-      // The axios interceptor handles invalid sessions.
-    });
-    return () => { active = false; };
+    axiosInstance
+      .get("/auth/me")
+      .then((response) => {
+        if (active) setUser(response.data.data);
+      })
+      .catch(() => {
+        // The axios interceptor handles invalid sessions.
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const login = useCallback(async (email, password) => {

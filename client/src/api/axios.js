@@ -1,7 +1,10 @@
 import axios from "axios";
 import { getToken, removeToken } from "../utils/token";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:8080/api";
 
 const axiosInstance = axios.create({ baseURL: API_URL, timeout: 15000 });
 
@@ -21,7 +24,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       removeToken();
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
+      if (
+        window.location.pathname !== "/login" &&
+        window.location.pathname !== "/signup"
+      ) {
         window.location.assign("/login");
       }
     }
