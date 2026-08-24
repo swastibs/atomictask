@@ -1,6 +1,97 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, CheckCircle2, CircleAlert, Clock3, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  CircleAlert,
+  Clock3,
+  Trash2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { apiError, taskApi } from "../api/tasks";
-const cards = [["total", "Total tasks", Clock3], ["pending", "Pending", Clock3], ["inProgress", "In progress", Clock3], ["completed", "Completed", CheckCircle2], ["overdue", "Overdue", CircleAlert], ["deleted", "In trash", Trash2]];
-export default function Stats() { const [stats, setStats] = useState(null); const [error, setError] = useState(""); useEffect(() => { taskApi.stats().then(setStats).catch((requestError) => setError(apiError(requestError))); }, []); return <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10"><Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Back to tasks</Link><header><p className="text-xs uppercase tracking-widest text-muted-foreground">Signal over noise</p><h1 className="mt-2 font-heading text-3xl font-semibold">Task statistics</h1><p className="mt-2 text-muted-foreground">A compact read on your current workload.</p></header>{error && <p className="text-sm text-destructive" role="alert">{error}</p>}{!stats ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{cards.map(([key]) => <div key={key} className="h-28 animate-pulse rounded-2xl bg-muted" />)}</div> : <><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{cards.map(([key, title, Icon]) => <article key={key} className="rounded-2xl border bg-card p-5"><Icon className="size-5 text-[var(--accent-atomic)]" /><p className="mt-5 text-sm text-muted-foreground">{title}</p><strong className="font-heading text-3xl">{stats[key] || 0}</strong></article>)}</div><section className="rounded-2xl border bg-card p-6"><div className="flex items-end justify-between"><div><p className="text-sm text-muted-foreground">Completion rate</p><strong className="font-heading text-4xl">{stats.completionRate || 0}%</strong></div><p className="text-sm text-muted-foreground">{stats.completedToday || 0} completed today</p></div><div className="mt-5 h-3 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-(--accent-atomic) transition-all" style={{ width: `${stats.completionRate || 0}%` }} /></div></section></>}</div>; }
+const cards = [
+  ["total", "Total tasks", Clock3],
+  ["pending", "Pending", Clock3],
+  ["inProgress", "In progress", Clock3],
+  ["completed", "Completed", CheckCircle2],
+  ["overdue", "Overdue", CircleAlert],
+  ["deleted", "In trash", Trash2],
+];
+export default function Stats() {
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    taskApi
+      .stats()
+      .then(setStats)
+      .catch((requestError) => setError(apiError(requestError)));
+  }, []);
+  return (
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:py-10">
+      <Link
+        to="/dashboard"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <ArrowLeft className="size-4" /> Back to tasks
+      </Link>
+      <header>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground">
+          Signal over noise
+        </p>
+        <h1 className="mt-2 font-heading text-3xl font-semibold">
+          Task statistics
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          A compact read on your current workload.
+        </p>
+      </header>
+      {error && (
+        <p className="text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+      {!stats ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cards.map(([key]) => (
+            <div
+              key={key}
+              className="h-28 animate-pulse rounded-2xl bg-muted"
+            />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {cards.map(([key, title, Icon]) => (
+              <article key={key} className="rounded-2xl border bg-card p-5">
+                <Icon className="size-5 text-[var(--accent-atomic)]" />
+                <p className="mt-5 text-sm text-muted-foreground">{title}</p>
+                <strong className="font-heading text-3xl">
+                  {stats[key] || 0}
+                </strong>
+              </article>
+            ))}
+          </div>
+          <section className="rounded-2xl border bg-card p-6">
+            <div className="flex items-end justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Completion rate</p>
+                <strong className="font-heading text-4xl">
+                  {stats.completionRate || 0}%
+                </strong>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {stats.completedToday || 0} completed today
+              </p>
+            </div>
+            <div className="mt-5 h-3 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-(--accent-atomic) transition-all"
+                style={{ width: `${stats.completionRate || 0}%` }}
+              />
+            </div>
+          </section>
+        </>
+      )}
+    </div>
+  );
+}

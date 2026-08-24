@@ -57,7 +57,10 @@ function App() {
                 <Route path="/tasks/trash" element={<Trash />} />
                 <Route path="/stats" element={<Stats />} />
                 <Route path="/habits" element={<FocusPage mode="habits" />} />
-                <Route path="/pomodoro" element={<FocusPage mode="pomodoro" />} />
+                <Route
+                  path="/pomodoro"
+                  element={<FocusPage mode="pomodoro" />}
+                />
                 <Route path="/profile" element={<Profile />} />
                 <Route
                   path="/admin"

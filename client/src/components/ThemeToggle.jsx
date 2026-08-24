@@ -19,7 +19,8 @@ export default function ThemeToggle({ className = "", onThemeChange }) {
 
   useEffect(() => {
     const syncTheme = (event) => {
-      if (event.detail === "light" || event.detail === "dark") setTheme(event.detail);
+      if (event.detail === "light" || event.detail === "dark")
+        setTheme(event.detail);
     };
     window.addEventListener(THEME_EVENT, syncTheme);
     const root = document.documentElement;

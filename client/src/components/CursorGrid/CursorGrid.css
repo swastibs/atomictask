@@ -7,14 +7,12 @@
   background-image:
     linear-gradient(
       to right,
-      color-mix(in srgb, var(--cursor-grid-color) 100%, transparent)
-        1px,
+      color-mix(in srgb, var(--cursor-grid-color) 100%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--cursor-grid-color) 100%, transparent)
-        1px,
+      color-mix(in srgb, var(--cursor-grid-color) 100%, transparent) 1px,
       transparent 1px
     );
   background-size: var(--cursor-grid-cell-size) var(--cursor-grid-cell-size);
