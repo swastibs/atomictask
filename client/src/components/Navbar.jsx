@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Atom, LogOut, UserRound } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +20,39 @@ const sarcasticMessages = [
   "Your battery is crying in light mode. 🔋",
   "I bet you stare at the sun too. ☀️",
   "Dark mode: exists. You: ignore. 🤷",
+  "☀️ Congratulations, you've chosen the brightest timeline.",
+  "I can hear your retinas screaming from here. 😬",
+  "This is why we can't have nice dark things.",
+  "Your screen is basically a flashlight now. 🔦",
+  "Are you trying to communicate with the sun? 🌻",
+  "I'd offer you sunglasses, but I'm just code. 🕶️",
+  "Light mode? In this economy?",
+  "You must really enjoy replacing your monitor bulbs.",
+  "Every pixel in light mode files a complaint. 📄",
+  "Dark mode called. It misses you.",
+];
+
+const playfulDarkMessages = [
+  "🌙 Welcome to the dark side. Your eyes thank you.",
+  "🖤 Ahh, much better. Your retinas are applauding.",
+  "✨ Dark mode engaged. Productivity +10%.",
+  "🌌 You've chosen wisely. The night is strong with this one.",
+  "😌 Thank you for saving your eyes. They'll remember this.",
+  "🦉 Wise move. Even owls approve.",
+  "💡 Light is overrated. Darkness is where the magic happens.",
+  "🎉 Dark mode activated. Your screen just got cooler.",
+  "🌃 Smooth move. Your battery and eyes are both smiling.",
+  "☕ Dark mode on. Coffee taste better in the dark, too.",
+  "🕶️ Smooth operator. The dark suits you.",
+  "🌒 Your screen just exhaled.",
+  "🔮 The void welcomes you with open arms.",
+  "🖤 Ah, silence for your eyeballs.",
+  "🌟 Stars align. Dark mode on.",
+  "🦇 You've gone full night mode. Respect.",
+  "📉 Brightness dropped. Vibes rose.",
+  "🌑 Even the moon is jealous of your setup.",
+  "🎧 Dark mode: the lofi of themes.",
+  "🪄 Presto! Your screen is now a calm cave.",
 ];
 
 export default function Navbar() {
@@ -35,31 +68,79 @@ export default function Navbar() {
   });
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
+  const [darkMessage, setDarkMessage] = useState("");
+  const [showDarkMessage, setShowDarkMessage] = useState(false);
+  const darkTimerRef = useRef(null);
+  const lightIntervalRef = useRef(null);
+  const prevIsDarkRef = useRef(isDark);
 
   const isHome = pathname === "/";
   const isAuthPage = pathname === "/login" || pathname === "/signup";
-
-  // Show landing links on both home and auth pages.
   const showLandingLinks = isHome || isAuthPage;
 
+  // Scroll listener
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Light mode: show a random message immediately, then rotate every 60 seconds
   useEffect(() => {
     if (!isDark) {
-      const timer = setTimeout(() => {
+      // Hide any dark message immediately
+      setShowDarkMessage(false);
+      if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
+
+      const showRandomLightMessage = () => {
         const randomIndex = Math.floor(
           Math.random() * sarcasticMessages.length,
         );
         setMessage(sarcasticMessages[randomIndex]);
         setShowMessage(true);
-      }, 800);
-      return () => clearTimeout(timer);
+      };
+
+      // Show first message immediately
+      showRandomLightMessage();
+
+      // Set up interval to change message every 60 seconds
+      lightIntervalRef.current = setInterval(showRandomLightMessage, 60000);
+
+      return () => {
+        if (lightIntervalRef.current) {
+          clearInterval(lightIntervalRef.current);
+          lightIntervalRef.current = null;
+        }
+      };
     }
     return undefined;
+  }, [isDark]);
+
+  // Dark mode transition: show a new playful message, disappear after 5 seconds
+  useEffect(() => {
+    const wasDark = prevIsDarkRef.current;
+    prevIsDarkRef.current = isDark;
+
+    if (wasDark !== isDark) {
+      if (isDark) {
+        // Switched to dark mode
+        if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
+        const randomIndex = Math.floor(
+          Math.random() * playfulDarkMessages.length,
+        );
+        setDarkMessage(playfulDarkMessages[randomIndex]);
+        setShowDarkMessage(true);
+        darkTimerRef.current = setTimeout(() => {
+          setShowDarkMessage(false);
+        }, 5000); // 5 seconds
+      } else {
+        // Switched to light mode – handled by the previous effect
+      }
+    }
+
+    return () => {
+      if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
+    };
   }, [isDark]);
 
   const handleLogout = async () => {
@@ -166,15 +247,27 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Fixed‑height message container – stable layout */}
-      <div className="mt-2 w-full max-w-[760px] pr-4 text-right h-6 overflow-hidden">
-        <p
-          className={`text-xs text-muted-foreground/60 italic transition-opacity duration-500 hover:text-muted-foreground/90 ${
-            !isDark && showMessage ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {message}
-        </p>
+      {/* Message container */}
+      <div
+        className={`mt-2 w-full ${isScrolled ? "max-w-[760px]" : "max-w-[1000px]"} pr-5 text-right h-6 overflow-hidden`}
+      >
+        {isDark ? (
+          <p
+            className={`text-xs font-medium text-accent-atomic transition-opacity duration-300 ${
+              showDarkMessage ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {darkMessage}
+          </p>
+        ) : (
+          <p
+            className={`text-xs text-muted-foreground/60 italic transition-opacity duration-500 hover:text-muted-foreground/90 ${
+              showMessage ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {message}
+          </p>
+        )}
       </div>
     </div>
   );
