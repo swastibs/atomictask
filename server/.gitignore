@@ -79,6 +79,8 @@ allcode.txt
 # Yarn Integrity file
 .yarn-integrity
 
+testresult.txt
+
 # dotenv environment variable files
 .env
 .env.development.local
