@@ -11,7 +11,7 @@ const connectDB = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(mongoURI);
+    const conn = await mongoose.connect(mongoURI, { dbName: "atomictask" });
     console.log(chalk.blue(`MongoDB Connected: ${conn.connection.host}`));
   } catch (error) {
     console.error(chalk.red("MongoDB connection error:"));
