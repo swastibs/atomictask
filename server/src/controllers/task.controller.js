@@ -5,25 +5,42 @@ import ApiError from "../utils/ApiError.js";
 import { successResponse } from "../utils/response.js";
 
 const isAdmin = (user) => user.role === "admin";
-const accessFilter = (user) => isAdmin(user)
-  ? { isDeleted: false }
-  : { isDeleted: false, $or: [{ user: user.id }, { assignees: user.id }] };
-const canWrite = (task, user) => isAdmin(user)
-  || String(task.user) === String(user.id)
-  || task.assignees.some((id) => String(id) === String(user.id));
+const accessFilter = (user) =>
+  isAdmin(user)
+    ? { isDeleted: false }
+    : { isDeleted: false, $or: [{ user: user.id }, { assignees: user.id }] };
+const canWrite = (task, user) =>
+  isAdmin(user) ||
+  String(task.user) === String(user.id) ||
+  task.assignees.some((id) => String(id) === String(user.id));
 
 const validateAssignees = async (ids) => {
   const uniqueIds = [...new Set((ids || []).map(String))];
   if (!uniqueIds.length) return [];
-  const count = await User.countDocuments({ _id: { $in: uniqueIds }, isActive: true, isDeleted: false });
-  if (count !== uniqueIds.length) throw new ApiError(400, "One or more assignees are invalid");
+  const count = await User.countDocuments({
+    _id: { $in: uniqueIds },
+    isActive: true,
+    isDeleted: false,
+  });
+  if (count !== uniqueIds.length)
+    throw new ApiError(400, "One or more assignees are invalid");
   return uniqueIds;
 };
 
-const activity = (actor, action, metadata = undefined) => ({ actor, action, metadata });
+const activity = (actor, action, metadata = undefined) => ({
+  actor,
+  action,
+  metadata,
+});
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const normalizePriority = (value) => value === "URGENT" ? "urgent" : value;
-const normalizeStatus = (value) => ({ TODO: "pending", IN_PROGRESS: "in-progress", DONE: "completed", CANCELLED: "cancelled" }[value] || value);
+const normalizePriority = (value) => (value === "URGENT" ? "urgent" : value);
+const normalizeStatus = (value) =>
+  ({
+    TODO: "pending",
+    IN_PROGRESS: "in-progress",
+    DONE: "completed",
+    CANCELLED: "cancelled",
+  })[value] || value;
 
 // ============================================================
 // Helper: verify parentTask ownership & prevent cycles
@@ -129,18 +146,33 @@ export const createTask = catchAsync(async (req, res) => {
  * GET /api/tasks?status=&priority=&dueDate=
  */
 export const getTasks = catchAsync(async (req, res) => {
-  const { status, priority, dueDate, search, page = 1, limit = 20, sortBy = "createdAt", sortOrder = "desc", assignedTo } = req.query;
+  const {
+    status,
+    priority,
+    dueDate,
+    search,
+    page = 1,
+    limit = 20,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+    assignedTo,
+  } = req.query;
 
   const query = accessFilter(req.user);
 
   if (status) query.status = normalizeStatus(status);
   if (priority) query.priority = normalizePriority(priority);
   if (assignedTo) query.assignees = assignedTo;
-  if (search) query.$and = [{ $or: [
-    { title: { $regex: escapeRegex(search), $options: "i" } },
-    { description: { $regex: escapeRegex(search), $options: "i" } },
-    { tags: { $regex: escapeRegex(search), $options: "i" } },
-  ] }];
+  if (search)
+    query.$and = [
+      {
+        $or: [
+          { title: { $regex: escapeRegex(search), $options: "i" } },
+          { description: { $regex: escapeRegex(search), $options: "i" } },
+          { tags: { $regex: escapeRegex(search), $options: "i" } },
+        ],
+      },
+    ];
 
   if (dueDate) {
     const date = new Date(dueDate);
@@ -156,14 +188,23 @@ export const getTasks = catchAsync(async (req, res) => {
   const skip = (Number(page) - 1) * Number(limit);
   const sort = { [sortBy]: sortOrder === "asc" ? 1 : -1 };
   const [tasks, total] = await Promise.all([
-    Task.find(query).sort(sort).skip(skip).limit(Number(limit)).populate("assignees", "name username email"),
+    Task.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(Number(limit))
+      .populate("assignees", "name username email"),
     Task.countDocuments(query),
   ]);
 
   return successResponse(res, {
     message: "Tasks retrieved successfully",
     data: tasks,
-    pagination: { page: Number(page), limit: Number(limit), total, pages: Math.ceil(total / Number(limit)) },
+    pagination: {
+      page: Number(page),
+      limit: Number(limit),
+      total,
+      pages: Math.ceil(total / Number(limit)),
+    },
   });
 });
 
@@ -175,7 +216,9 @@ export const getTask = catchAsync(async (req, res) => {
   const task = await Task.findOne({
     _id: req.params.id,
     ...accessFilter(req.user),
-  }).populate("parentTask", "_id title").populate("assignees", "name username email");
+  })
+    .populate("parentTask", "_id title")
+    .populate("assignees", "name username email");
 
   if (!task) {
     throw new ApiError(404, "Task not found");
@@ -203,7 +246,8 @@ export const updateTask = catchAsync(async (req, res) => {
   if (!existingTask) {
     throw new ApiError(404, "Task not found");
   }
-  if (!canWrite(existingTask, req.user)) throw new ApiError(403, "You cannot modify this task");
+  if (!canWrite(existingTask, req.user))
+    throw new ApiError(403, "You cannot modify this task");
 
   if (Object.keys(req.body).length === 0) {
     throw new ApiError(400, "At least one field is required for update");
@@ -225,11 +269,12 @@ export const updateTask = catchAsync(async (req, res) => {
   const filteredUpdate = {};
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) {
-      filteredUpdate[field] = field === "priority"
-        ? normalizePriority(updateData[field])
-        : field === "status"
-          ? normalizeStatus(updateData[field])
-          : updateData[field];
+      filteredUpdate[field] =
+        field === "priority"
+          ? normalizePriority(updateData[field])
+          : field === "status"
+            ? normalizeStatus(updateData[field])
+            : updateData[field];
     }
   });
 
@@ -238,7 +283,9 @@ export const updateTask = catchAsync(async (req, res) => {
     await validateParentTask(req.user.id, id, filteredUpdate.parentTask);
   }
   if (filteredUpdate.assignees !== undefined) {
-    filteredUpdate.assignees = await validateAssignees(filteredUpdate.assignees);
+    filteredUpdate.assignees = await validateAssignees(
+      filteredUpdate.assignees,
+    );
   }
 
   // Manually manage completedAt when status changes
@@ -248,7 +295,11 @@ export const updateTask = catchAsync(async (req, res) => {
   if (filteredUpdate.status && filteredUpdate.status !== "completed") {
     filteredUpdate.completedAt = null;
   }
-  filteredUpdate.$push = { activity: activity(req.user.id, "updated", { fields: Object.keys(filteredUpdate) }) };
+  filteredUpdate.$push = {
+    activity: activity(req.user.id, "updated", {
+      fields: Object.keys(filteredUpdate),
+    }),
+  };
 
   const updatedTask = await Task.findByIdAndUpdate(id, filteredUpdate, {
     new: true,
@@ -275,7 +326,8 @@ export const deleteTask = catchAsync(async (req, res) => {
   if (!existingTask) {
     throw new ApiError(404, "Task not found");
   }
-  if (!canWrite(existingTask, req.user)) throw new ApiError(403, "You cannot delete this task");
+  if (!canWrite(existingTask, req.user))
+    throw new ApiError(403, "You cannot delete this task");
 
   const childCount = await Task.countDocuments({
     parentTask: id,
@@ -321,7 +373,10 @@ export const restoreTask = catchAsync(async (req, res) => {
       isDeleted: false,
     });
     if (!parent) {
-      throw new ApiError(400, "Restore the parent task before restoring this task");
+      throw new ApiError(
+        400,
+        "Restore the parent task before restoring this task",
+      );
     }
   }
 
@@ -352,7 +407,10 @@ export const bulkDeleteTasks = catchAsync(async (req, res) => {
     throw new ApiError(400, "Please provide an array of task IDs");
   }
 
-  const tasks = await Task.find({ _id: { $in: ids }, ...accessFilter(req.user) });
+  const tasks = await Task.find({
+    _id: { $in: ids },
+    ...accessFilter(req.user),
+  });
   if (!isAdmin(req.user) && tasks.some((task) => !canWrite(task, req.user))) {
     throw new ApiError(403, "You cannot delete one or more selected tasks");
   }
@@ -410,23 +468,29 @@ export const bulkUpdateTasks = catchAsync(async (req, res) => {
   const filteredUpdate = {};
   allowedFields.forEach((field) => {
     if (updateData[field] !== undefined) {
-      filteredUpdate[field] = field === "priority"
-        ? normalizePriority(updateData[field])
-        : field === "status"
-          ? normalizeStatus(updateData[field])
-          : updateData[field];
+      filteredUpdate[field] =
+        field === "priority"
+          ? normalizePriority(updateData[field])
+          : field === "status"
+            ? normalizeStatus(updateData[field])
+            : updateData[field];
     }
   });
 
   if (Object.keys(filteredUpdate).length === 0) {
     throw new ApiError(400, "No valid fields to update");
   }
-  const tasks = await Task.find({ _id: { $in: ids }, ...accessFilter(req.user) });
+  const tasks = await Task.find({
+    _id: { $in: ids },
+    ...accessFilter(req.user),
+  });
   if (!isAdmin(req.user) && tasks.some((task) => !canWrite(task, req.user))) {
     throw new ApiError(403, "You cannot update one or more selected tasks");
   }
   if (filteredUpdate.assignees !== undefined) {
-    filteredUpdate.assignees = await validateAssignees(filteredUpdate.assignees);
+    filteredUpdate.assignees = await validateAssignees(
+      filteredUpdate.assignees,
+    );
   }
 
   if (filteredUpdate.status === "completed") {
@@ -617,9 +681,13 @@ export const permanentDeleteTask = catchAsync(async (req, res) => {
 });
 
 const findWritableTask = async (req) => {
-  const task = await Task.findOne({ _id: req.params.id, ...accessFilter(req.user) });
+  const task = await Task.findOne({
+    _id: req.params.id,
+    ...accessFilter(req.user),
+  });
   if (!task) throw new ApiError(404, "Task not found");
-  if (!canWrite(task, req.user)) throw new ApiError(403, "You cannot modify this task");
+  if (!canWrite(task, req.user))
+    throw new ApiError(403, "You cannot modify this task");
   return task;
 };
 
@@ -629,13 +697,23 @@ export const addComment = catchAsync(async (req, res) => {
   task.activity.push(activity(req.user.id, "commented"));
   await task.save();
   const comment = task.comments[task.comments.length - 1];
-  return successResponse(res, { statusCode: 201, message: "Comment added successfully", data: comment });
+  return successResponse(res, {
+    statusCode: 201,
+    message: "Comment added successfully",
+    data: comment,
+  });
 });
 
 export const getComments = catchAsync(async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, ...accessFilter(req.user) }).populate("comments.author", "name username");
+  const task = await Task.findOne({
+    _id: req.params.id,
+    ...accessFilter(req.user),
+  }).populate("comments.author", "name username");
   if (!task) throw new ApiError(404, "Task not found");
-  return successResponse(res, { message: "Comments retrieved successfully", data: task.comments });
+  return successResponse(res, {
+    message: "Comments retrieved successfully",
+    data: task.comments,
+  });
 });
 
 export const addAssignees = catchAsync(async (req, res) => {
@@ -644,13 +722,23 @@ export const addAssignees = catchAsync(async (req, res) => {
   task.assignees = [...new Set([...task.assignees.map(String), ...ids])];
   task.activity.push(activity(req.user.id, "assigned", { userIds: ids }));
   await task.save();
-  return successResponse(res, { message: "Assignees updated successfully", data: task.assignees });
+  return successResponse(res, {
+    message: "Assignees updated successfully",
+    data: task.assignees,
+  });
 });
 
 export const removeAssignee = catchAsync(async (req, res) => {
   const task = await findWritableTask(req);
-  task.assignees = task.assignees.filter((id) => String(id) !== req.params.userId);
-  task.activity.push(activity(req.user.id, "unassigned", { userId: req.params.userId }));
+  task.assignees = task.assignees.filter(
+    (id) => String(id) !== req.params.userId,
+  );
+  task.activity.push(
+    activity(req.user.id, "unassigned", { userId: req.params.userId }),
+  );
   await task.save();
-  return successResponse(res, { message: "Assignee removed successfully", data: task.assignees });
+  return successResponse(res, {
+    message: "Assignee removed successfully",
+    data: task.assignees,
+  });
 });

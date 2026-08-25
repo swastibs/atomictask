@@ -8,9 +8,21 @@ const objectId = Joi.string().hex().length(24).messages({
 
 // ─── Reusable enums ──────────────────────────────────────────
 const priorityEnum = ["low", "medium", "high"];
-const statusEnum = ["pending", "in-progress", "completed", "cancelled", "archived"];
+const statusEnum = [
+  "pending",
+  "in-progress",
+  "completed",
+  "cancelled",
+  "archived",
+];
 const priorityValues = [...priorityEnum, "URGENT"];
-const statusValues = [...statusEnum, "TODO", "IN_PROGRESS", "DONE", "CANCELLED"];
+const statusValues = [
+  ...statusEnum,
+  "TODO",
+  "IN_PROGRESS",
+  "DONE",
+  "CANCELLED",
+];
 
 // ─── Schemas ──────────────────────────────────────────────────
 
@@ -103,7 +115,9 @@ export const getTasksSchema = {
     search: Joi.string().trim().max(100).optional(),
     page: Joi.number().integer().min(1).max(100000).default(1),
     limit: Joi.number().integer().min(1).max(100).default(20),
-    sortBy: Joi.string().valid("createdAt", "updatedAt", "dueDate", "priority", "title").default("createdAt"),
+    sortBy: Joi.string()
+      .valid("createdAt", "updatedAt", "dueDate", "priority", "title")
+      .default("createdAt"),
     sortOrder: Joi.string().valid("asc", "desc").default("desc"),
     assignedTo: objectId.optional(),
   })
@@ -155,11 +169,16 @@ export const getSubtasksSchema = {
 
 export const bulkDeleteTasksSchema = {
   body: Joi.object({
-    ids: Joi.array().items(objectId.required()).min(1).max(100).required().messages({
-      "array.base": "ids must be an array",
-      "array.min": "At least one ID must be provided",
-      "any.required": "ids is required",
-    }),
+    ids: Joi.array()
+      .items(objectId.required())
+      .min(1)
+      .max(100)
+      .required()
+      .messages({
+        "array.base": "ids must be an array",
+        "array.min": "At least one ID must be provided",
+        "any.required": "ids is required",
+      }),
   })
     .unknown(false)
     .messages({
@@ -169,11 +188,16 @@ export const bulkDeleteTasksSchema = {
 
 export const bulkUpdateTasksSchema = {
   body: Joi.object({
-    ids: Joi.array().items(objectId.required()).min(1).max(100).required().messages({
-      "array.base": "ids must be an array",
-      "array.min": "At least one ID must be provided",
-      "any.required": "ids is required",
-    }),
+    ids: Joi.array()
+      .items(objectId.required())
+      .min(1)
+      .max(100)
+      .required()
+      .messages({
+        "array.base": "ids must be an array",
+        "array.min": "At least one ID must be provided",
+        "any.required": "ids is required",
+      }),
     updateData: Joi.object({
       priority: Joi.string()
         .valid(...priorityValues)
@@ -208,12 +232,16 @@ export const bulkUpdateTasksSchema = {
 
 export const commentSchema = {
   params: Joi.object({ id: objectId.required() }),
-  body: Joi.object({ body: Joi.string().trim().min(1).max(2000).required() }).unknown(false),
+  body: Joi.object({
+    body: Joi.string().trim().min(1).max(2000).required(),
+  }).unknown(false),
 };
 
 export const assigneesSchema = {
   params: Joi.object({ id: objectId.required() }),
-  body: Joi.object({ userIds: Joi.array().items(objectId.required()).min(1).max(50).required() }).unknown(false),
+  body: Joi.object({
+    userIds: Joi.array().items(objectId.required()).min(1).max(50).required(),
+  }).unknown(false),
 };
 
 export const removeAssigneeSchema = {

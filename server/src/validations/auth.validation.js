@@ -13,13 +13,10 @@ const password = Joi.string().min(4).max(32).messages({
   "string.max": "Password cannot exceed 32 characters",
 });
 
-const strongPassword = Joi.string()
-  .min(4)
-  .max(72)
-  .messages({
-    "string.min": "Password must be at least 4 characters long",
-    "string.max": "Password cannot exceed 72 characters",
-  });
+const strongPassword = Joi.string().min(4).max(72).messages({
+  "string.min": "Password must be at least 4 characters long",
+  "string.max": "Password cannot exceed 72 characters",
+});
 
 const username = Joi.string()
   .trim()
@@ -63,7 +60,9 @@ export const loginSchema = {
       "any.required": "Password is required",
       "string.empty": "Password is required",
     }),
-  }).or("email", "username").unknown(false),
+  })
+    .or("email", "username")
+    .unknown(false),
 
   params: Joi.object().max(0),
   query: Joi.object().max(0),
@@ -97,8 +96,13 @@ export const updateProfileSchema = {
   body: Joi.object({
     name: Joi.string().trim().min(1).max(100),
     username: username,
-    avatar: Joi.string().uri({ scheme: ["http", "https"] }).max(500).allow(null, ""),
-  }).min(1).unknown(false),
+    avatar: Joi.string()
+      .uri({ scheme: ["http", "https"] })
+      .max(500)
+      .allow(null, ""),
+  })
+    .min(1)
+    .unknown(false),
   params: Joi.object().max(0),
   query: Joi.object().max(0),
 };

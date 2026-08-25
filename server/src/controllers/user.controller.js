@@ -29,7 +29,9 @@ export const getAdminDashboard = catchAsync(async (req, res) => {
 export const updateProfile = catchAsync(async (req, res) => {
   const allowed = ["name", "username", "avatar"];
   const update = Object.fromEntries(
-    allowed.filter((field) => req.body[field] !== undefined).map((field) => [field, req.body[field]]),
+    allowed
+      .filter((field) => req.body[field] !== undefined)
+      .map((field) => [field, req.body[field]]),
   );
   const user = await User.findOneAndUpdate(
     { _id: req.user.id, isDeleted: false, isActive: true },
@@ -42,5 +44,8 @@ export const updateProfile = catchAsync(async (req, res) => {
   delete result.sessionVersion;
   delete result.isDeleted;
   delete result.deletedBy;
-  return successResponse(res, { message: "Profile updated successfully", data: { user: result } });
+  return successResponse(res, {
+    message: "Profile updated successfully",
+    data: { user: result },
+  });
 });

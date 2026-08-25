@@ -8,7 +8,8 @@ import { jwtSecret } from "../config/envConfig.js";
 import { successResponse } from "../utils/response.js";
 import { addToBlacklist } from "../utils/tokenBlacklist.js";
 
-const DUMMY_PASSWORD_HASH = "$2b$12$C6UzMDM.H6dfI/f/IKcEe.2N4pY8z8N9qz7S8FQ6g0j2p0o5J7Z7G";
+const DUMMY_PASSWORD_HASH =
+  "$2b$12$C6UzMDM.H6dfI/f/IKcEe.2N4pY8z8N9qz7S8FQ6g0j2p0o5J7Z7G";
 
 const sanitizeUser = (user) => {
   const userObj = user.toObject();
@@ -56,12 +57,17 @@ export const login = catchAsync(async (req, res) => {
   }
 
   const user = await User.findOne({
-    ...(email ? { email: email.toLowerCase().trim() } : { username: username.toLowerCase().trim() }),
+    ...(email
+      ? { email: email.toLowerCase().trim() }
+      : { username: username.toLowerCase().trim() }),
     isDeleted: false,
     isActive: true,
   }).select("+password +sessionVersion");
 
-  const passwordMatches = await bcrypt.compare(password, user?.password || DUMMY_PASSWORD_HASH);
+  const passwordMatches = await bcrypt.compare(
+    password,
+    user?.password || DUMMY_PASSWORD_HASH,
+  );
   if (!user || !passwordMatches) {
     throw new ApiError(401, "Invalid credentials");
   }
@@ -133,5 +139,8 @@ export const updatePassword = catchAsync(async (req, res) => {
 export const getMe = catchAsync(async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) throw new ApiError(404, "User not found");
-  return successResponse(res, { message: "Current user fetched successfully", data: sanitizeUser(user) });
+  return successResponse(res, {
+    message: "Current user fetched successfully",
+    data: sanitizeUser(user),
+  });
 });

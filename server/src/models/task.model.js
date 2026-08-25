@@ -39,14 +39,22 @@ const taskSchema = new mongoose.Schema(
     assignees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     comments: [
       {
-        author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        author: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
         body: { type: String, required: true, trim: true, maxlength: 2000 },
         createdAt: { type: Date, default: Date.now },
       },
     ],
     activity: [
       {
-        actor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        actor: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
         action: { type: String, required: true, maxlength: 80 },
         metadata: { type: mongoose.Schema.Types.Mixed, default: undefined },
         createdAt: { type: Date, default: Date.now },
