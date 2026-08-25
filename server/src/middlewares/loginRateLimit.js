@@ -5,7 +5,9 @@ const MAX_FAILURES = 5;
 const attempts = new Map();
 
 const keyFor = (req) => {
-  const identity = String(req.body?.email || req.body?.username || "unknown").trim().toLowerCase();
+  const identity = String(req.body?.email || req.body?.username || "unknown")
+    .trim()
+    .toLowerCase();
   return `${req.ip}:${identity}`;
 };
 
@@ -18,7 +20,9 @@ export const loginRateLimit = (req, res, next) => {
   if (current && current.failures >= MAX_FAILURES) {
     const retryAfter = Math.ceil((current.expiresAt - now) / 1000);
     res.set("Retry-After", String(retryAfter));
-    return next(new ApiError(429, "Too many failed login attempts. Try again later."));
+    return next(
+      new ApiError(429, "Too many failed login attempts. Try again later."),
+    );
   }
 
   res.on("finish", () => {
@@ -28,9 +32,10 @@ export const loginRateLimit = (req, res, next) => {
     }
     if (res.statusCode !== 401) return;
     const existing = attempts.get(key);
-    const nextRecord = existing && existing.expiresAt > Date.now()
-      ? existing
-      : { failures: 0, expiresAt: Date.now() + WINDOW_MS };
+    const nextRecord =
+      existing && existing.expiresAt > Date.now()
+        ? existing
+        : { failures: 0, expiresAt: Date.now() + WINDOW_MS };
     nextRecord.failures += 1;
     attempts.set(key, nextRecord);
     if (attempts.size > 10000) {

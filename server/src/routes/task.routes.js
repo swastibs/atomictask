@@ -43,7 +43,11 @@ router.use(authenticate);
 
 router.post(
   "/bulk-update",
-  validate(bulkUpdateTasksSchema, {}, { abortEarly: false, stripUnknown: true }),
+  validate(
+    bulkUpdateTasksSchema,
+    {},
+    { abortEarly: false, stripUnknown: true },
+  ),
   bulkUpdateTasks,
 );
 
