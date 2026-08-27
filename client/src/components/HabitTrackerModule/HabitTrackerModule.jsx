@@ -605,14 +605,7 @@ export default function HabitTrackerModule() {
               )}
               <div className="stats-grid">
                 <div className="stat-card">
-                  <Flame
-                    className={
-                      [7, 14, 21, 30].includes(bestStreak)
-                        ? "milestone-fire"
-                        : ""
-                    }
-                    size={16}
-                  />
+                  <Flame size={16} />
                   <span>Best streak</span>
                   <strong>{bestStreak}</strong>
                   <small>{streakText}</small>

@@ -741,9 +741,7 @@ button.heat-cell.is-future:hover {
   grid-row: span 2;
   color: var(--accent-atomic);
 }
-.milestone-fire {
-  animation: milestone-fire 1.4s ease-in-out infinite;
-}
+
 .stat-card span {
   color: var(--soft-ink);
   font-size: 0.65rem;
@@ -851,16 +849,7 @@ button.heat-cell.is-future:hover {
       color-mix(in oklch, var(--accent-atomic) 0%, transparent);
   }
 }
-@keyframes milestone-fire {
-  0%,
-  100% {
-    transform: scale(1) rotate(-4deg);
-  }
-  50% {
-    color: #e7836b;
-    transform: scale(1.18) rotate(4deg);
-  }
-}
+
 @media (max-width: 760px) {
   .habit-section {
     padding: 4.5rem 0.75rem;
