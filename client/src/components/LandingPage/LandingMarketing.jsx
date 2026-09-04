@@ -1,5 +1,4 @@
-import { ArrowRight, BarChart3, Bot, CalendarDays, Check, CheckCheck, ChevronDown, Flame, GitBranch, Target, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowRight, BarChart3, Bot, CalendarDays, ChevronDown, Flame, GitBranch, Target } from "lucide-react";
 
 const steps = [
   ["Capture it", "Add a task the moment it crosses your mind.", Target],
@@ -12,26 +11,6 @@ const features = [
   [Flame, "Habit rhythm", "Check in daily, watch streaks grow, and learn what works."],
   [BarChart3, "Useful insight", "Measure momentum without turning your life into a spreadsheet."],
   [CalendarDays, "Daily focus", "Keep dates, priorities, and the next move close at hand."],
-];
-
-const plans = [
-  { name: "Free", price: "₹0", description: "Try the core AtomicTask loop.", highlights: ["5 tasks per day", "5 habits", "Limited AI tools and tokens"], action: "Start free" },
-  { name: "Pro", price: "₹299", description: "More room for a serious personal system.", highlights: ["50 tasks per day", "10 habits", "Higher AI limits and collaboration"], action: "Choose Pro", featured: true },
-  { name: "Team", price: "699", description: "Everything unlocked for focused teams.", highlights: ["Unlimited tasks and habits", "Unlimited AI tokens", "Full collaboration and integrations"], action: "Unlock everything" },
-];
-
-const featureMatrix = [
-  ["Tasks", [true, "5 per day"], [true, "50 per day"], [true, "Unlimited"]],
-  ["Habits", [true, "Up to 5"], [true, "Up to 10"], [true, "Unlimited"]],
-  ["AI assistant", [true, "Limited tools"], [true, "Expanded tools"], [true, "All tools"]],
-  ["AI tokens", [true, "100 per day"], [true, "1,000 per day"], [true, "Unlimited"]],
-  ["Daily streaks and progress", [true, "Included"], [true, "Included"], [true, "Included"]],
-  ["Advanced analytics", [false, "Not included"], [true, "Included"], [true, "Included"]],
-  ["Invite collaborators", [false, "Not included"], [true, "Included"], [true, "Unlimited"]],
-  ["Shared projects", [false, "Not included"], [true, "Included"], [true, "Included"]],
-  ["Calendar integrations", [false, "Not included"], [true, "Included"], [true, "Included"]],
-  ["Export and API access", [false, "Not included"], [false, "Not included"], [true, "Included"]],
-  ["Priority support", [false, "Community support"], [true, "Priority support"], [true, "Dedicated support"]],
 ];
 
 const faqs = [
@@ -54,15 +33,12 @@ export function HowItWorksSection() {
   return <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-14 sm:px-6 sm:py-18"><div className="mx-auto max-w-2xl text-center"><span className="eyebrow">The loop</span><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Three small steps, repeated daily</h2><p className="mt-2 text-sm text-muted-foreground">No project plans to configure. Just the next atomic action.</p></div><ol className="mt-9 grid gap-4 sm:grid-cols-3">{steps.map(([title, description, Icon], index) => <li key={title} className="rounded-2xl border border-border bg-card p-5"><span className="font-heading text-sm font-semibold text-muted-foreground/70">0{index + 1}</span><div className="mt-3 inline-flex size-9 items-center justify-center rounded-xl" style={{ background: "color-mix(in oklch, var(--accent-atomic) 16%, transparent)", color: "var(--accent-atomic)" }}><Icon className="size-4" /></div><h3 className="mt-3 font-heading text-lg font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{description}</p></li>)}</ol></section>;
 }
 
-function Status({ value }) {
-  const [available, label] = value;
-  return <span className="inline-flex items-center gap-2">{available ? <Check className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-label="Available" /> : <X className="size-4 shrink-0 text-muted-foreground/60" aria-label="Unavailable" />}<span className={available ? "text-foreground" : "text-muted-foreground"}>{label}</span></span>;
-}
-
-export function PricingSection() {
+export { default as PricingSection } from "./PricingSection";
+  /*
   return <section id="pricing" className="scroll-mt-24 border-y border-border/70 bg-muted/20 py-14 sm:py-18"><div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="mx-auto max-w-2xl text-center"><span className="eyebrow">Simple pricing</span><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Start free. Upgrade when it earns its place.</h2><p className="mt-2 text-sm text-muted-foreground">Clear limits, useful upgrades, no confusing feature maze.</p></div><div className="mt-8 grid gap-3 lg:grid-cols-3">{plans.map((plan) => <article key={plan.name} className={`relative flex flex-col rounded-2xl border bg-card p-5 ${plan.featured ? "border-[var(--accent-atomic)] shadow-lg" : "border-border"}`}>{plan.featured && <span className="absolute -top-3 left-5 rounded-full bg-[var(--accent-atomic)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent-atomic-foreground)]">Most popular</span>}<div className="flex items-start justify-between gap-3"><div><h3 className="font-heading text-xl font-semibold">{plan.name}</h3><p className="mt-1 text-sm text-muted-foreground">{plan.description}</p></div><div className="text-right"><strong className="font-heading text-2xl">{plan.price}</strong><span className="block text-[10px] text-muted-foreground">/ month</span></div></div><ul className="mt-5 grid gap-2 border-t border-border/70 pt-4 text-sm">{plan.highlights.map((feature) => <li key={feature} className="flex items-start gap-2"><CheckCheck className="mt-0.5 size-4 shrink-0 text-[var(--accent-atomic)]" /><span>{feature}</span></li>)}</ul><Link to="/signup" className={`mt-6 ${plan.featured ? "cta-button" : "cta-outline"}`}>{plan.action}<ArrowRight className="size-4" /></Link></article>)}</div><div className="mt-8 overflow-x-auto rounded-2xl border border-border bg-card"><table className="w-full min-w-[760px] border-collapse text-left text-sm"><caption className="sr-only">Feature comparison for Free, Pro, and Team plans</caption><thead><tr className="border-b border-border bg-muted/30"><th scope="col" className="px-4 py-3 font-semibold">Features</th>{plans.map((plan) => <th scope="col" key={plan.name} className="px-4 py-3 font-heading font-semibold">{plan.name}<span className="ml-2 text-xs font-normal text-muted-foreground">{plan.price}</span></th>)}</tr></thead><tbody>{featureMatrix.map(([name, free, pro, team]) => <tr key={name} className="border-b border-border/70 last:border-0"><th scope="row" className="px-4 py-3 font-medium">{name}</th>{[free, pro, team].map((value, index) => <td key={`${name}-${index}`} className="px-4 py-3"><Status value={value} /></td>)}</tr>)}</tbody></table></div></div></section>;
 }
 
+*/
 export function FAQSection() {
   return <section className="mx-auto max-w-4xl px-4 py-14 sm:px-6 sm:py-18"><div className="text-center"><span className="eyebrow">Questions, answered</span><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight sm:text-4xl">A calmer way to get started.</h2></div><div className="mt-8 divide-y divide-border border-y border-border">{faqs.map(([question, answer]) => <details key={question} className="group py-4"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-heading text-sm font-semibold sm:text-base">{question}<ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" /></summary><p className="mt-2 max-w-2xl pr-8 text-sm leading-6 text-muted-foreground">{answer}</p></details>)}</div></section>;
 }
