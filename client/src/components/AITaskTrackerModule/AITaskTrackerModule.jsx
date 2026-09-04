@@ -7,7 +7,9 @@ import {
   ChevronRight,
   Clock3,
   GripVertical,
+  Plus,
   Sparkles,
+  Trash2,
   Zap,
 } from "lucide-react";
 import "./AITaskTrackerModule.css";
@@ -150,6 +152,7 @@ const createInitialTasks = () => {
 
 export default function AITaskTrackerModule() {
   const [prompt, setPrompt] = useState("");
+  const [newTaskTitle, setNewTaskTitle] = useState("");
   const today = todayKey();
   const minDate = addDays(today, -6);
   const [selectedDate, setSelectedDate] = useState(today);
@@ -178,11 +181,35 @@ export default function AITaskTrackerModule() {
   const suggestTasks = (event) => {
     event.preventDefault();
     if (!prompt.trim()) return;
+    const context = prompt.trim().replace(/[.!?]+$/, "");
+    const createdAt = Date.now();
     updateTasks((current) => [
       ...current.filter((task) => !task.ai),
-      ...SUGGESTED_TASKS.map((task) => ({ ...task, ai: true, done: false })),
+      ...SUGGESTED_TASKS.map((task, index) => ({
+        ...task,
+        id: `${task.id}-${createdAt}-${index}`,
+        title: index === 0 ? `${task.title}: ${context}` : task.title,
+        ai: true,
+        done: false,
+      })),
     ]);
     setPrompt("");
+  };
+  const addTask = (event) => {
+    event.preventDefault();
+    const title = newTaskTitle.trim();
+    if (!title) return;
+    updateTasks((current) => [
+      ...current,
+      {
+        id: `custom-${Date.now()}`,
+        title,
+        due: "Anytime",
+        priority: "Light",
+        duration: "Open",
+      },
+    ]);
+    setNewTaskTitle("");
   };
   const toggleTask = (id) => {
     const task = tasks.find((item) => item.id === id);
@@ -195,6 +222,9 @@ export default function AITaskTrackerModule() {
       setCelebrate(true);
       window.setTimeout(() => setCelebrate(false), 700);
     }
+  };
+  const removeTask = (id) => {
+    updateTasks((current) => current.filter((task) => task.id !== id));
   };
   const completed = tasks.filter((task) => task.done).length;
   const completionPercentage = tasks.length
@@ -325,6 +355,18 @@ export default function AITaskTrackerModule() {
                 </div>
                 <small>Three focused tasks, shaped around your energy.</small>
               </form>
+              <form className="quick-add" onSubmit={addTask}>
+                <input
+                  value={newTaskTitle}
+                  onChange={(event) => setNewTaskTitle(event.target.value)}
+                  placeholder="Add a task yourself"
+                  aria-label="Add a task"
+                />
+                <button type="submit" aria-label="Add task">
+                  <Plus size={15} />
+                  Add task
+                </button>
+              </form>
               <div className="task-list">
                 <div className="ai-panel-heading">
                   <div>
@@ -352,8 +394,9 @@ export default function AITaskTrackerModule() {
                     draggable
                     onDragStart={() => setDraggedTask(task.id)}
                     onDragOver={(event) => event.preventDefault()}
+                    onDragEnd={() => setDraggedTask(null)}
                     onDrop={() => {
-                      if (draggedTask && draggedTask !== task.id)
+                      if (draggedTask && draggedTask !== task.id) {
                         updateTasks((current) => {
                           const from = current.findIndex(
                             (item) => item.id === draggedTask,
@@ -366,6 +409,8 @@ export default function AITaskTrackerModule() {
                           next.splice(to, 0, moved);
                           return next;
                         });
+                      }
+                      setDraggedTask(null);
                     }}
                   >
                     <GripVertical className="drag-handle" size={15} />
@@ -389,6 +434,14 @@ export default function AITaskTrackerModule() {
                       {task.priority}
                     </span>
                     {task.ai && <Sparkles className="task-sparkle" size={13} />}
+                    <button
+                      type="button"
+                      className="task-delete"
+                      onClick={() => removeTask(task.id)}
+                      aria-label={`Remove ${task.title}`}
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 ))}
               </div>

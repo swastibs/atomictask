@@ -262,7 +262,6 @@ function StreakCalendar({ completed, today }) {
                   ? `${shortDate(key)}, upcoming`
                   : `${shortDate(key)} activity`
               }
-              onClick={() => {}}
             />
           );
         })}

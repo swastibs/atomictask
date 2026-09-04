@@ -89,7 +89,10 @@ export default function Navbar() {
   useEffect(() => {
     if (!isDark) {
       // Hide any dark message immediately
-      setShowDarkMessage(false);
+      const hideDarkMessageTimer = window.setTimeout(
+        () => setShowDarkMessage(false),
+        0,
+      );
       if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
 
       const showRandomLightMessage = () => {
@@ -107,6 +110,7 @@ export default function Navbar() {
       lightIntervalRef.current = setInterval(showRandomLightMessage, 60000);
 
       return () => {
+        clearTimeout(hideDarkMessageTimer);
         if (lightIntervalRef.current) {
           clearInterval(lightIntervalRef.current);
           lightIntervalRef.current = null;
@@ -125,14 +129,20 @@ export default function Navbar() {
       if (isDark) {
         // Switched to dark mode
         if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
-        const randomIndex = Math.floor(
-          Math.random() * playfulDarkMessages.length,
-        );
-        setDarkMessage(playfulDarkMessages[randomIndex]);
-        setShowDarkMessage(true);
+        const showDarkMessageTimer = window.setTimeout(() => {
+          const randomIndex = Math.floor(
+            Math.random() * playfulDarkMessages.length,
+          );
+          setDarkMessage(playfulDarkMessages[randomIndex]);
+          setShowDarkMessage(true);
+        }, 0);
         darkTimerRef.current = setTimeout(() => {
           setShowDarkMessage(false);
         }, 5000); // 5 seconds
+        return () => {
+          clearTimeout(showDarkMessageTimer);
+          if (darkTimerRef.current) clearTimeout(darkTimerRef.current);
+        };
       } else {
         // Switched to light mode – handled by the previous effect
       }
@@ -150,9 +160,10 @@ export default function Navbar() {
 
   const links = showLandingLinks
     ? [
-        ["How it works", "#how-it-works"],
-        ["Tasks", "#ai-tasks"],
-        ["Habits", "#habits"],
+        ["Habit", "#habits"],
+        ["Task", "#ai-tasks"],
+        ["How It Works", "#how-it-works"],
+        ["Pricing", "#pricing"],
       ]
     : [
         ["Dashboard", "/dashboard"],
@@ -166,7 +177,7 @@ export default function Navbar() {
       <nav
         className={`
           flex w-full items-center justify-between gap-3 rounded-full border border-border/80 bg-background/80 px-5 py-2.5 backdrop-blur-md shadow-sm transition-all duration-300
-          ${isScrolled ? "max-w-[760px] py-2" : "max-w-[1000px] py-2.5"}
+          ${isScrolled ? "max-w-[860px] py-2" : "max-w-[1000px] py-2.5"}
         `}
         aria-label="Primary navigation"
       >

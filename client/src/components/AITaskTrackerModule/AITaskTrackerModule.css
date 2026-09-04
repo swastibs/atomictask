@@ -204,6 +204,44 @@
   color: var(--muted-foreground);
   font-size: 0.62rem;
 }
+.quick-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+.quick-add input {
+  min-width: 0;
+  flex: 1;
+  padding: 0.62rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font: 0.72rem var(--font-sans);
+}
+.quick-add input:focus {
+  border-color: var(--accent-atomic);
+}
+.quick-add button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.quick-add button:hover {
+  border-color: var(--accent-atomic);
+  color: var(--accent-atomic);
+}
 .task-list {
   margin-top: 2rem;
 }
@@ -326,6 +364,27 @@
 .task-sparkle {
   color: var(--accent-atomic);
   animation: sparkle-pop 0.7s ease-out;
+}
+.task-delete {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s, background 0.2s;
+}
+.task-row:hover .task-delete,
+.task-delete:focus-visible {
+  opacity: 1;
+}
+.task-delete:hover {
+  background: color-mix(in oklch, var(--destructive) 12%, transparent);
+  color: var(--destructive);
 }
 .ai-side-column {
   display: grid;
