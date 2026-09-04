@@ -49,7 +49,7 @@ export default function AuthPage({ initialMode = "login" }) {
     try {
       setLoginError("");
       await login(data.email, data.password);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       setLoginError(error.response?.data?.message || "Login failed");
     }

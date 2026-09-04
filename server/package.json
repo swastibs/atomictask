@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "test": "node tests/manual-test.js",
-    "check": "node --check index.js && node --check src/app.js && node --check src/controllers/auth.controller.js && node --check src/controllers/task.controller.js && node --check src/routes/task.routes.js",
+    "check": "node --check index.js && node --check src/app.js && node --check src/controllers/auth.controller.js && node --check src/routes/auth.routes.js && node --check src/routes/user.routes.js",
     "start": "node index.js"
   },
   "keywords": [],

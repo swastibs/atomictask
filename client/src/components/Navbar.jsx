@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, Atom, LogOut, UserRound } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
+import { ArrowRight, Atom } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 const sarcasticMessages = [
@@ -56,9 +55,6 @@ const playfulDarkMessages = [
 ];
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const stored = window.localStorage.getItem("atomictask-theme");
@@ -74,9 +70,6 @@ export default function Navbar() {
   const lightIntervalRef = useRef(null);
   const prevIsDarkRef = useRef(isDark);
 
-  const isHome = pathname === "/";
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
-  const showLandingLinks = isHome || isAuthPage;
 
   // Scroll listener
   useEffect(() => {
@@ -153,24 +146,12 @@ export default function Navbar() {
     };
   }, [isDark]);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
-
-  const links = showLandingLinks
-    ? [
-        ["Habit", "#habits"],
-        ["Task", "#ai-tasks"],
-        ["How It Works", "#how-it-works"],
-        ["Pricing", "#pricing"],
-      ]
-    : [
-        ["Dashboard", "/dashboard"],
-        ["Trash", "/tasks/trash"],
-        ["Stats", "/stats"],
-        ["Profile", "/profile"],
-      ];
+  const links = [
+    ["Habit", "#habits"],
+    ["Task", "#ai-tasks"],
+    ["How It Works", "#how-it-works"],
+    ["Pricing", "#pricing"],
+  ];
 
   return (
     <div className="sticky top-4 z-50 flex w-full flex-col items-center px-4 transition-all duration-300">
@@ -183,7 +164,7 @@ export default function Navbar() {
       >
         {/* Brand */}
         <Link
-          to={user ? "/dashboard" : "/"}
+          to="/"
           className="group flex shrink-0 items-center gap-2 font-heading text-lg font-semibold tracking-tight text-foreground no-underline transition-opacity hover:opacity-70"
         >
           <Atom className="size-5 text-[var(--accent-atomic)]" />
@@ -219,42 +200,19 @@ export default function Navbar() {
         <div className="flex shrink-0 items-center gap-3">
           <ThemeToggle onThemeChange={(theme) => setIsDark(theme === "dark")} />
 
-          {user ? (
-            <>
-              <Link
-                to="/profile"
-                className="hidden items-center gap-1.5 text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground sm:flex"
-              >
-                <UserRound className="size-4 text-[var(--accent-atomic)]" />
-                <span>{user.name || "Profile"}</span>
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-destructive sm:px-3"
-                aria-label="Log out"
-              >
-                <LogOut className="size-4" />
-                <span className="hidden sm:inline">Log out</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="hidden text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground sm:block"
-              >
-                Log in
-              </Link>
-              <Link
-                to="/signup"
-                className="flex items-center gap-1.5 rounded-full bg-[var(--accent-atomic)] px-4 py-2 text-sm font-extrabold text-[var(--accent-atomic-foreground)] no-underline transition-all duration-200 hover:brightness-105 active:scale-95"
-              >
-                Get started
-                <ArrowRight className="size-3.5" />
-              </Link>
-            </>
-          )}
+          <Link
+            to="/login"
+            className="hidden text-sm font-semibold text-muted-foreground no-underline transition-colors hover:text-foreground sm:block"
+          >
+            Log in
+          </Link>
+          <Link
+            to="/signup"
+            className="flex items-center gap-1.5 rounded-full bg-[var(--accent-atomic)] px-4 py-2 text-sm font-extrabold text-[var(--accent-atomic-foreground)] no-underline transition-all duration-200 hover:brightness-105 active:scale-95"
+          >
+            Get started
+            <ArrowRight className="size-3.5" />
+          </Link>
         </div>
       </nav>
 
