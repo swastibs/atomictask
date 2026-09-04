@@ -217,6 +217,10 @@
     filter: brightness(1.06);
   }
 
+  .eyebrow {
+    @apply block text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground;
+  }
+
   .cta-outline {
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-muted;
   }
