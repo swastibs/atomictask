@@ -11,11 +11,12 @@ import authRouter from "./modules/auth/auth.routes.js";
 import { passport } from "./modules/auth/passport.js";
 
 const app = express();
+const CLIENT_ORIGIN = new URL(CLIENT_URL).origin;
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 app.use(helmet());
-app.use(cors({ origin: CLIENT_URL, credentials: true }));
+app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());

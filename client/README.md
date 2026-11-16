@@ -1,16 +1,50 @@
-# React + Vite
+# AtomicTasks frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The client is a React 18 + Vite single-page app written in JavaScript and JSX. It uses Tailwind CSS, Framer Motion, React Router, TanStack Query, React Hook Form + Zod, Axios, and Sonner.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use Node.js 20 or newer and pnpm:
 
-## React Compiler
+```sh
+cd client
+pnpm install
+cp .env.example .env
+pnpm dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Vite runs at `http://localhost:5173`. Start the API separately at `http://localhost:8080` and set its `CLIENT_URL` to `http://localhost:5173`; the API must allow credentialed CORS from that origin.
 
-## Expanding the Oxlint configuration
+For production:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```sh
+pnpm build
+pnpm preview
+```
+
+Deploy `dist/` behind an SPA fallback so routes such as `/auth/callback` and `/auth/verify-email` serve `index.html`.
+
+## Environment
+
+| Variable | Default | Description |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:8080/api` | Backend API base URL |
+| `VITE_CLIENT_URL` | `http://localhost:5173` | Client origin used for local setup |
+| `VITE_GOOGLE_OAUTH_ENABLED` | `false` | Enable the Google redirect button only when the server provider is configured |
+| `VITE_GITHUB_OAUTH_ENABLED` | `false` | Enable the GitHub redirect button only when the server provider is configured |
+
+The backend health response currently returns `{ success, message, uptime }` (with `uptime` at the top level), not a `project` field. The footer displays the configured app name locally and the API's actual status/uptime.
+
+Email links from the backend use `/auth/verify-email` and `/auth/reset-password`; both are supported alongside `/verify-email` and `/reset-password`.
+
+## Auth behavior
+
+- Access tokens stay in React context and an in-memory Axios bridge only; they are never persisted to browser storage.
+- The refresh token stays in the backend's HTTP-only cookie. Axios sends it using `withCredentials`.
+- Startup silently calls `/auth/refresh`, then `/auth/me`. Protected routes wait for that one bootstrap attempt.
+- Concurrent `401` responses share one refresh request; retried requests are marked and auth endpoints are excluded from refresh retries.
+- A failed refresh clears auth state and redirects to `/login?reason=session_expired`.
+- Google/GitHub are full-page redirects. The server does not report provider availability in `/health`, so enable each button through its Vite flag only after configuring the matching backend credentials and callback URL.
+- No waitlist or task/habit endpoints are called. Marketing visuals are illustrative; the dashboard only uses real auth and session data.
+
+See [API_COVERAGE.md](./API_COVERAGE.md) for the endpoint-to-screen map. The current backend route/response contract is the source of truth; for example, `/auth/me` returns the user directly in `data`, and `/health` places `uptime` at the top level.

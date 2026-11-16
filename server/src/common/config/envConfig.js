@@ -4,6 +4,24 @@ export const PORT = Number(process.env.PORT) || 8080;
 export const NODE_ENV = process.env.NODE_ENV || "development";
 export const PROJECT_NAME = process.env.PROJECT_NAME || "AtomicTasks";
 export const MONGO_URI = process.env.MONGO_URI;
+const MONGO_DATABASES = {
+  development: "atomictask_dev",
+  stage: "atomictask_stage",
+  production: "atomictask_prod",
+};
+
+export const getMongoDatabaseName = (nodeEnv) => {
+  const databaseName = Object.hasOwn(MONGO_DATABASES, nodeEnv)
+    ? MONGO_DATABASES[nodeEnv]
+    : undefined;
+  if (!databaseName) {
+    throw new Error(
+      `Unsupported NODE_ENV "${nodeEnv}". Use development, stage, or production.`,
+    );
+  }
+  return databaseName;
+};
+
 export const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 export const API_URL = process.env.API_URL || `http://localhost:${PORT}`;
 

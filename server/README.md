@@ -8,8 +8,13 @@ tokens, and Passport OAuth login with Google and GitHub.
 Use Node.js 20 or newer.
 
 1. Copy `.env.example` to `.env`.
-2. Set `MONGO_URI` and generate three different secrets of at least 32
-   characters for `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, and `SESSION_SECRET`.
+2. Set `MONGO_URI` to your MongoDB server/cluster connection string and generate
+   three different secrets of at least 32 characters for `JWT_SECRET`,
+   `REFRESH_TOKEN_SECRET`, and `SESSION_SECRET`. The database is selected from
+   `NODE_ENV`: `development` uses `atomictask_dev`, `stage` uses
+   `atomictask_stage`, and `production` uses `atomictask_prod`. This selection
+   overrides any database name in the URI. MongoDB creates the selected
+   database when the application first writes data.
    For example, generate each with `openssl rand -hex 32`.
 3. Configure `CLIENT_URL` and `API_URL`. For production, both must use HTTPS.
 4. Configure the SMTP values to enable registration, verification, and password
