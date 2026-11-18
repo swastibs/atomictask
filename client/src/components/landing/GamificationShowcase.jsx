@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Award, Flame, Shield, Sparkles, Star, Trophy } from "lucide-react";
 import Reveal from "@/components/landing/Reveal";
 
@@ -50,12 +49,7 @@ export default function GamificationShowcase() {
                 <span className="text-muted">2,420 XP</span><span className="font-mono text-gold">80 XP to level 9</span>
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-white/[.07] p-[2px]">
-                <motion.div
-                  animate={{ width: "76%" }}
-                  className="h-full rounded-full bg-brand"
-                  initial={{ width: "8%" }}
-                  transition={{ duration: 1.8, delay: 0.2, ease: "easeOut" }}
-                />
+                <div className="h-full w-[76%] rounded-full bg-brand" />
               </div>
             </div>
             <div className="relative mt-7">
@@ -65,26 +59,21 @@ export default function GamificationShowcase() {
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {badges.map(([label, icon], index) => (
-                  <motion.div
-                    animate={{ scale: 1, opacity: 1 }}
+                  <div
                     className={`rounded-xl border p-3 text-center ${index === 1 ? "border-pink/25 bg-pink/[.07]" : "border-white/[.07] bg-black/10"}`}
-                    initial={{ scale: 0.8, opacity: 0 }}
                     key={label}
-                    transition={{ delay: 0.4 + index * 0.12, type: "spring" }}
                   >
                     <span className="text-xl">{icon}</span>
                     <span className="mt-2 block text-[9px] text-muted">{label}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
-            <motion.div
-              animate={{ opacity: [0, 1, 0], y: [8, 0, -6], scale: [0.92, 1, 1.04] }}
+            <div
               className="absolute right-8 top-20 flex items-center gap-2 rounded-full border border-gold/25 bg-[#1a1720] px-3 py-2 text-xs text-gold shadow-glow"
-              transition={{ duration: 3.5, repeat: Infinity, repeatDelay: 3 }}
             >
               <Sparkles className="size-3.5" /> Level up!
-            </motion.div>
+            </div>
           </div>
         </Reveal>
       </div>

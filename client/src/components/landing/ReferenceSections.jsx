@@ -3,12 +3,18 @@ import {
   BarChart3,
   Bot,
   CalendarDays,
-  ChevronDown,
   Flame,
   GitBranch,
   Target,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@/components/keyframery/accordion";
 
 const features = [
   [Bot, "AI planning", "Turn a thought into a focused queue of doable next actions."],
@@ -213,17 +219,16 @@ export function ReferenceFAQ() {
           id="faq-title"
           title="A calmer way to get started."
         />
-        <div className="ref-faq-list">
-          {questions.map(([question, answer]) => (
-            <details key={question}>
-              <summary>
-                {question}
-                <ChevronDown aria-hidden="true" />
-              </summary>
-              <p>{answer}</p>
-            </details>
+        <Accordion className="ref-faq-list" collapsible type="single">
+          {questions.map(([question, answer], index) => (
+            <AccordionItem key={question} value={`question-${index}`}>
+              <AccordionHeader>
+                <AccordionTrigger>{question}</AccordionTrigger>
+              </AccordionHeader>
+              <AccordionPanel><p>{answer}</p></AccordionPanel>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </div>
     </section>
   );

@@ -1,0 +1,306 @@
+export * from "@/components/keyframery/primitives/command"
+
+/* Theming: set on a part or its ancestor; unset variables preserve the original theme.
+   --command-face: Palette surface (default: --popover).
+   --command-ink: Palette and search text (default: --popover-foreground / --foreground).
+   --command-accent: Highlighted command (default: --accent).
+   --command-radius: Palette corners (default: 14px).
+   --command-row-height: Command row height (default: 2.25rem).
+   --command-gap: Search and command icon spacing (default: 0.625rem).
+ */
+
+/* Styled command palette: the animated primitive plus the Keyframery look. */
+
+import {
+  Command as CommandRoot,
+  type CommandData,
+  CommandEmpty as CommandEmptyPart,
+  CommandGroup as CommandGroupPart,
+  CommandGroupLabel as CommandGroupLabelPart,
+  CommandInput as CommandInputPart,
+  CommandItem as CommandItemPart,
+  CommandItemIcon as CommandItemIconPart,
+  CommandItemText as CommandItemTextPart,
+  CommandList as CommandListPart,
+  CommandPage as CommandPagePart,
+  CommandSeparator as CommandSeparatorPart,
+  CommandShortcut as CommandShortcutPart,
+  CommandStatus as CommandStatusPart,
+  createCommandController,
+} from "@/components/keyframery/primitives/command"
+import * as React from "react"
+
+import { Speed, type SpeedProps } from "@/lib/keyframery"
+import { cn } from "@/lib/utils"
+
+/* UI SDK accepts a class name or a function of state; keep both working. */
+function withClass<S>(base: string, className: string | ((state: S) => string | undefined) | undefined) {
+  return typeof className === "function" ? (state: S) => cn(base, className(state)) : cn(base, className)
+}
+
+/* The palette is a sheet: the search row on top, the commands below. */
+function Command({ speed, className, ...props }: React.ComponentProps<typeof CommandRoot> & SpeedProps) {
+  return (
+    <Speed speed={speed}>
+      <CommandRoot
+        className={withClass(
+          cn(
+            "group/command flex w-full flex-col overflow-hidden rounded-[var(--command-radius,14px)] bg-[var(--command-face,var(--popover))] text-[color:var(--command-ink,var(--popover-foreground))]",
+            "shadow-[0_0_0_1px_rgb(0_0_0/0.06),0_2px_6px_-2px_rgb(0_0_0/0.08),0_12px_32px_-8px_rgb(0_0_0/0.18)]",
+            "dark:shadow-[0_0_0_1px_rgb(255_255_255/0.08),0_12px_32px_-8px_rgb(0_0_0/0.7)]",
+          ),
+          className,
+        )}
+        {...props}
+      />
+    </Speed>
+  )
+}
+
+/* The search row: a leading svg, the input, and anything after it, over a hairline. */
+function CommandSearch({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="command-search"
+      className={cn(
+        "flex h-12 shrink-0 items-center gap-[var(--command-gap,0.625rem)] border-b border-border px-4 text-muted-foreground",
+        "[&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:transition-colors [&>svg]:duration-[calc(150ms*var(--kf-speed,1))] has-[input:focus-visible]:[&>svg]:text-[color:var(--command-ink,var(--foreground))] motion-reduce:[&>svg]:transition-none",
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+/* Bare text in the search row: the sheet is the field, so focus shows on the row's icon
+   and the caret, not as a ring around the whole palette. */
+function CommandInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandInputPart>) {
+  return (
+    <CommandInputPart
+      className={withClass(
+        cn(
+          "h-full min-w-0 flex-1 bg-transparent text-[14px] text-[color:var(--command-ink,var(--foreground))] outline-none placeholder:text-muted-foreground",
+          "[&::-webkit-search-cancel-button]:appearance-none",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+        ),
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+/* With no children it renders the commands passed to `<Command items>` as styled rows. */
+function CommandList({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof CommandListPart>) {
+  return (
+    <CommandListPart
+      className={withClass(
+        cn(
+          "max-h-[320px] scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 outline-none",
+          "group-has-[[data-slot=command-empty][data-empty]]/command:hidden",
+          /* The gliding highlight, in the row's shape and colour. */
+          "before:rounded-[8px] before:bg-[var(--command-accent,var(--accent))]",
+        ),
+        className,
+      )}
+      {...props}
+    >
+      {children ?? ((state) => (state.items ? <CommandItems items={state.items} /> : null))}
+    </CommandListPart>
+  )
+}
+
+/* Renders no element. Its commands arrive by the primitive's cascade. */
+function CommandPage(props: React.ComponentProps<typeof CommandPagePart>) {
+  return <CommandPagePart {...props} />
+}
+
+function CommandItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandItemPart>) {
+  return (
+    <CommandItemPart
+      className={withClass(
+        cn(
+          "group/item relative flex h-[var(--command-row-height,2.25rem)] cursor-default items-center gap-[var(--command-gap,0.625rem)] rounded-[8px] px-2.5 text-[13px] leading-none outline-none select-none",
+          "data-highlighted:text-accent-foreground",
+          "data-disabled:pointer-events-none data-disabled:opacity-40",
+          "data-pending:cursor-progress data-pending:opacity-60",
+        ),
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandItemIcon({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandItemIconPart>) {
+  return (
+    <CommandItemIconPart
+      className={withClass("grid size-4 shrink-0 place-items-center text-muted-foreground transition-colors duration-[calc(100ms*var(--kf-speed,1))] group-data-highlighted/item:text-[color:var(--command-ink,var(--foreground))] data-mirror:rtl:-scale-x-100 motion-reduce:transition-none! [&_svg]:size-4", className)}
+      {...props}
+    />
+  )
+}
+
+/* The matched part reads stronger; the rest steps back. */
+function CommandItemText({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandItemTextPart>) {
+  return (
+    <CommandItemTextPart
+      className={withClass(
+        cn(
+          "min-w-0 flex-1 truncate leading-[1.3]",
+          "data-matched:text-[color:color-mix(in_oklab,var(--command-ink,var(--foreground))_70%,transparent)] [&_mark]:bg-transparent [&_mark]:font-semibold [&_mark]:text-[color:var(--command-ink,var(--foreground))]",
+        ),
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+function CommandShortcut({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandShortcutPart>) {
+  return (
+    <CommandShortcutPart
+      className={withClass("ml-auto shrink-0 pl-3 text-[12px] tracking-[0.08em] text-muted-foreground tabular-nums", className)}
+      {...props}
+    />
+  )
+}
+
+function CommandGroup({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandGroupPart>) {
+  return <CommandGroupPart className={withClass("flex flex-col", className)} {...props} />
+}
+
+function CommandGroupLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandGroupLabelPart>) {
+  return (
+    <CommandGroupLabelPart
+      className={withClass("px-2.5 pt-2.5 pb-1.5 text-[11px] leading-none font-medium text-muted-foreground select-none", className)}
+      {...props}
+    />
+  )
+}
+
+function CommandSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandSeparatorPart>) {
+  return (
+    <CommandSeparatorPart
+      className={withClass("-mx-1.5 my-1.5 h-px bg-border", className)}
+      {...props}
+    />
+  )
+}
+
+function CommandEmpty({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandEmptyPart>) {
+  return (
+    <CommandEmptyPart
+      className={withClass("hidden px-4 py-10 text-center text-[13px] text-muted-foreground data-empty:block data-loading:block", className)}
+      {...props}
+    />
+  )
+}
+
+function CommandStatus({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandStatusPart>) {
+  return (
+    <CommandStatusPart
+      className={withClass("px-4 pt-3 pb-1 text-[12px] text-muted-foreground tabular-nums empty:hidden", className)}
+      {...props}
+    />
+  )
+}
+
+/* A quiet strip under the list for hints such as which keys do what. */
+function CommandFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="command-footer"
+      className={cn(
+        "flex h-10 shrink-0 items-center gap-4 border-t border-border bg-muted/40 px-4 text-[12px] text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
+  )
+}
+
+/* Renders commands written as data with the styled parts above: plain strings, commands, groups
+   and separators. A command with `items` opens a page of its own, as in UI SDK. */
+function CommandItems({ items }: { items: CommandData }) {
+  return items.map((entry, index) => {
+    if (typeof entry !== "string" && "type" in entry) {
+      if (entry.type === "separator") return <CommandSeparator key={`separator-${index}`} />
+      return (
+        <CommandGroup key={`group-${entry.label ?? index}`}>
+          {entry.label && <CommandGroupLabel>{entry.label}</CommandGroupLabel>}
+          <CommandItems items={entry.items} />
+        </CommandGroup>
+      )
+    }
+    const command = typeof entry === "string" ? { value: entry, label: entry } : entry
+    return (
+      <CommandItem
+        key={command.value}
+        value={command.value}
+        label={command.label}
+        keywords={command.keywords}
+        disabled={command.disabled}
+        shortcut={command.shortcut}
+      >
+        <CommandItemText>{command.label}</CommandItemText>
+        {command.shortcut && <CommandShortcut />}
+      </CommandItem>
+    )
+  })
+}
+
+export type { CommandData } from "@/components/keyframery/primitives/command"
+export {
+  Command,
+  CommandEmpty,
+  CommandFooter,
+  CommandGroup,
+  CommandGroupLabel,
+  CommandInput,
+  CommandItem,
+  CommandItemIcon,
+  CommandItems,
+  CommandItemText,
+  CommandList,
+  CommandPage,
+  CommandSearch,
+  CommandSeparator,
+  CommandShortcut,
+  CommandStatus,
+  createCommandController,
+}

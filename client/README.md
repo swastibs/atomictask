@@ -1,6 +1,6 @@
 # AtomicTasks frontend
 
-The client is a React 18 + Vite single-page app written in JavaScript and JSX. It uses Tailwind CSS, Framer Motion, React Router, TanStack Query, React Hook Form + Zod, Axios, and Sonner.
+The client is a React 19 + Vite single-page app written in JavaScript and JSX. It uses Tailwind CSS v4, Keyframery's CSS-animated React components, React Router, TanStack Query, React Hook Form + Zod, Axios, and Sonner. Keyframery's 83 components are installed as editable source in `src/components/keyframery/`; the app uses its tabs, menus, dialogs, accordion, buttons, inputs, and motion-style switcher.
 
 ## Run locally
 
@@ -23,6 +23,8 @@ pnpm preview
 ```
 
 Deploy `dist/` behind an SPA fallback so routes such as `/auth/callback` and `/auth/verify-email` serve `index.html`.
+
+The Keyframery source is generated as TSX by the shadcn CLI; the application and its own components remain JSX/JavaScript. `tsconfig.json` provides the `@/` alias and JSX settings required by the CLI.
 
 ## Environment
 

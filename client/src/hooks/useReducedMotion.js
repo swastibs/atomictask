@@ -1,5 +1,17 @@
-import { useReducedMotion as useFramerReducedMotion } from "framer-motion";
+import { useSyncExternalStore } from "react";
+
+const query = "(prefers-reduced-motion: reduce)";
+
+function subscribe(callback) {
+  const media = window.matchMedia(query);
+  media.addEventListener("change", callback);
+  return () => media.removeEventListener("change", callback);
+}
+
+function getSnapshot() {
+  return window.matchMedia(query).matches;
+}
 
 export function useReducedMotion() {
-  return Boolean(useFramerReducedMotion());
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }

@@ -1,12 +1,9 @@
-import { motion } from "framer-motion";
 import { ArrowUp, Clock3, Sparkles, WandSparkles } from "lucide-react";
 import { useState } from "react";
 import Reveal from "@/components/landing/Reveal";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 export default function AISection() {
   const [showReply, setShowReply] = useState(false);
-  const reduceMotion = useReducedMotion();
 
   return (
     <section className="py-24 sm:py-32">
@@ -42,25 +39,19 @@ export default function AISection() {
                 I have a presentation, need to reply to two emails, and want to work out. What now?
               </div>
               {showReply ? (
-                <motion.div
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-[92%] rounded-2xl rounded-tl-sm border border-white/[.07] bg-white/[.035] px-4 py-3 text-[11px] leading-5 text-white/80"
-                  initial={{ opacity: 0, y: 8 }}
-                >
+                <div className="max-w-[92%] rounded-2xl rounded-tl-sm border border-white/[.07] bg-white/[.035] px-4 py-3 text-[11px] leading-5 text-white/80">
                   Start with 25 minutes on your presentation while your focus is fresh. Then batch those two quick replies. Keep the workout as your end-of-day win. You’ve got this.
                   <div className="mt-3 flex gap-2">
                     <span className="rounded-full bg-cyan/10 px-2 py-1 text-[9px] text-cyan">25 min focus</span>
                     <span className="rounded-full bg-primary/10 px-2 py-1 text-[9px] text-[#c5b7ff]">2 quick tasks</span>
                   </div>
-                </motion.div>
+                </div>
               ) : (
                 <div aria-label="AI is thinking" className="flex w-fit items-center gap-1 rounded-full bg-white/[.04] px-4 py-3">
                   {[0, 1, 2].map((n) => (
-                    <motion.span
-                      animate={reduceMotion ? undefined : { opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
+                    <span
                       className="size-1.5 rounded-full bg-cyan"
                       key={n}
-                      transition={{ duration: 1, delay: n * 0.16, repeat: Infinity }}
                     />
                   ))}
                 </div>

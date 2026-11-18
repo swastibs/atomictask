@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { forwardRef } from "react";
+import { Input as AnimatedInput } from "@/components/keyframery/input";
 
 const Input = forwardRef(function Input(
   { label, id, error, hint, className, ...props },
@@ -12,10 +13,10 @@ const Input = forwardRef(function Input(
           {label}
         </label>
       )}
-      <input
-        aria-invalid={Boolean(error)}
+      <AnimatedInput
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={clsx("field", error && "border-rose-400/70 focus:border-rose-400", className)}
+        aria-invalid={Boolean(error) || undefined}
+        className={clsx("h-12 rounded-xl bg-background/70 px-4 text-sm", className)}
         id={id}
         ref={ref}
         {...props}

@@ -1,8 +1,13 @@
-import { ArrowRight, Atom, Menu, X } from "lucide-react";
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { ArrowRight, Atom, Menu as MenuIcon } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "@/components/ui/Button";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+} from "@/components/keyframery/menu";
 
 const links = [
   ["Habit", "#habits"],
@@ -12,12 +17,9 @@ const links = [
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
-
-  const closeMenu = () => setMenuOpen(false);
-  const sectionHref = (href) =>
-    pathname === "/" ? href : `/${href}`;
+  const navigate = useNavigate();
+  const sectionHref = (href) => (pathname === "/" ? href : `/${href}`);
 
   return (
     <header className="ref-header">
@@ -48,33 +50,36 @@ export default function Navbar() {
           >
             Get started <ArrowRight aria-hidden="true" className="size-4" />
           </Button>
-          <button
-            aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            className="ref-menu-toggle"
-            onClick={() => setMenuOpen((open) => !open)}
-            type="button"
-          >
-            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </button>
+          <Menu>
+            <MenuTrigger aria-label="Open navigation menu" className="ref-menu-toggle">
+              <MenuIcon aria-hidden="true" />
+            </MenuTrigger>
+            <MenuContent align="end" className="w-56" side="bottom">
+              {links.map(([label, href]) => (
+                <MenuItem
+                  key={href}
+                  onSelect={() => {
+                    if (pathname === "/") {
+                      window.location.hash = href;
+                    } else {
+                      navigate(sectionHref(href));
+                    }
+                  }}
+                  value={label}
+                >
+                  {label}
+                </MenuItem>
+              ))}
+              <MenuItem onSelect={() => navigate("/login")} value="login">
+                Log in
+              </MenuItem>
+              <MenuItem onSelect={() => navigate("/register")} value="register">
+                Get started free
+              </MenuItem>
+            </MenuContent>
+          </Menu>
         </div>
       </nav>
-
-      {menuOpen && (
-        <nav aria-label="Mobile navigation" className="ref-mobile-menu">
-          {links.map(([label, href]) => (
-            <a href={sectionHref(href)} key={href} onClick={closeMenu}>
-              {label}
-            </a>
-          ))}
-          <Link onClick={closeMenu} to="/login">
-            Log in
-          </Link>
-          <Link className="ref-mobile-cta" onClick={closeMenu} to="/register">
-            Get started <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </nav>
-      )}
     </header>
   );
 }

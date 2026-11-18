@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Bell, Check, Flame, Heart, Users } from "lucide-react";
 import Reveal from "@/components/landing/Reveal";
 
@@ -44,24 +43,19 @@ export default function CommunitySection() {
                 ["2", "Maya Rivera", "11,820 XP", "MR", "bg-pink-300"],
                 ["3", "Alex Chen", "10,640 XP", "AC", "bg-violet-300"],
               ].map(([rank, name, xp, initials, color], index) => (
-                <motion.div
-                  animate={{ opacity: 1, x: 0 }}
+                <div
                   className={`flex items-center gap-3 rounded-xl px-3 py-3 ${index === 0 ? "border border-gold/20 bg-gold/[.06]" : "bg-white/[.025]"}`}
-                  initial={{ opacity: 0, x: 10 }}
                   key={rank}
-                  transition={{ delay: 0.15 + index * 0.12 }}
                 >
                   <span className={`w-5 text-center font-mono text-xs ${index === 0 ? "text-gold" : "text-muted"}`}>0{rank}</span>
                   <span className={`grid size-8 place-items-center rounded-full text-[9px] font-bold text-slate-900 ${color}`}>{initials}</span>
                   <span className="flex-1 text-xs font-medium">{name}</span>
                   <span className="font-mono text-[10px] text-muted">{xp}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
+            <div
               className="absolute -bottom-5 -right-2 flex max-w-[250px] items-center gap-3 rounded-2xl border border-primary/20 bg-[#171523] p-3 shadow-glow sm:-right-8"
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
               <span className="relative grid size-9 shrink-0 place-items-center rounded-xl bg-pink/10 text-pink">
                 <Bell className="size-4" /><span className="absolute -right-1 -top-1 size-2.5 rounded-full border-2 border-[#171523] bg-pink" />
@@ -71,7 +65,7 @@ export default function CommunitySection() {
               </p>
               <Heart className="size-3.5 shrink-0 text-pink" />
               <Check className="sr-only" />
-            </motion.div>
+            </div>
             <div className="mt-7 flex items-center justify-between text-[10px] text-muted">
               <span className="inline-flex items-center gap-1.5"><Flame className="size-3.5 text-pink" /> Weekly challenge</span>
               <span>5 days left</span>

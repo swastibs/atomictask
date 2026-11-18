@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Atom } from "lucide-react";
 import { Link } from "react-router-dom";
 import { authApi } from "@/api/auth";
+import { MotionStyleSwitcher } from "@/components/keyframery/motion-style";
 
 export default function Footer() {
   const status = useQuery({
@@ -22,6 +23,10 @@ export default function Footer() {
         <div className="ref-footer-links">
           <Link to="/login">Log in</Link>
           <Link to="/register">Sign up <ArrowRight aria-hidden="true" /></Link>
+        </div>
+        <div className="ref-motion-style">
+          <span>Motion</span>
+          <MotionStyleSwitcher aria-label="Choose animation style" />
         </div>
         <div aria-live="polite" className="ref-system-status">
           <span className={status.isError ? "is-offline" : ""} />
