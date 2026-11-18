@@ -51,7 +51,10 @@
 
 .ref-nav {
   display: flex;
-  width: min(100%, 68rem);
+  width: min(
+    calc(100% - var(--nav-shrink, 0px)),
+    calc(68rem - var(--nav-shrink, 0px))
+  );
   min-height: 3.75rem;
   align-items: center;
   justify-content: space-between;
