@@ -22,7 +22,7 @@ pnpm build
 pnpm preview
 ```
 
-Deploy `dist/` behind an SPA fallback so routes such as `/auth/callback` and `/auth/verify-email` serve `index.html`.
+For Vercel, set the project Root Directory to `client`; Vercel will use `client/vercel.json` to serve the SPA entry point for direct route requests such as `/auth/callback` and `/auth/verify-email`. The standard Vite build output is `dist/`.
 
 The Keyframery source is generated as TSX by the shadcn CLI; the application and its own components remain JSX/JavaScript. `tsconfig.json` provides the `@/` alias and JSX settings required by the CLI.
 
