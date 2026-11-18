@@ -51,10 +51,9 @@
 
 .ref-nav {
   display: flex;
-  width: min(
-    calc(100% - var(--nav-shrink, 0px)),
-    calc(68rem - var(--nav-shrink, 0px))
-  );
+  width: var(--nav-width, min(100%, 68rem));
+  min-width: var(--nav-min-width, 0px);
+  max-width: 68rem;
   min-height: 3.75rem;
   align-items: center;
   justify-content: space-between;
@@ -307,11 +306,14 @@
 
 .ref-orbit {
   position: relative;
-  display: grid;
+  display: flex;
   width: min(100%, 31rem);
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   min-height: 28rem;
-  place-items: center;
   justify-self: center;
+  padding: 1rem 1.35rem 0.8rem;
   border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
   border-radius: 2rem;
   background:
@@ -391,20 +393,18 @@
 }
 
 .ref-preview-top {
-  position: absolute;
-  top: 1.35rem;
-  right: 1.35rem;
-  left: 1.35rem;
   display: flex;
+  width: 100%;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
 }
 
 .ref-preview-top h2 {
-  margin: 0.4rem 0 0;
+  margin: 0.2rem 0 0;
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  line-height: 1.2;
   letter-spacing: -0.04em;
 }
 
@@ -426,40 +426,155 @@
 
 .ref-preview-tabs {
   z-index: 1;
-  width: calc(100% - 2.7rem);
-  margin-top: 4.1rem;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  margin-top: 0.65rem;
 }
 
 .ref-preview-tabs-list {
+  position: relative;
+  display: flex;
   width: 100%;
-  justify-content: space-between;
+  align-items: center;
+  gap: 0.2rem;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  padding: 0.25rem;
+  background: color-mix(in oklab, var(--background) 72%, var(--muted));
+}
+
+.ref-preview-tabs-list [role="tab"] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 2rem;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.5rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ref-preview-tabs-list [role="tab"]:hover,
+.ref-preview-tabs-list [role="tab"][aria-selected="true"] {
+  color: var(--foreground);
+}
+
+.ref-preview-tabs-list [role="tab"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.ref-preview-tabs-indicator {
+  z-index: 0;
+  border: 1px solid color-mix(in oklab, var(--primary) 25%, var(--border));
+  border-radius: 0.6rem;
+  background: color-mix(in oklab, var(--primary) 12%, var(--card));
+  box-shadow: 0 1px 4px color-mix(in oklab, var(--primary) 15%, transparent);
 }
 
 .ref-preview-panels {
-  min-height: 15rem;
+  width: 100%;
+  flex: 1;
+  margin-top: 0.75rem;
+  min-height: 18rem;
 }
 
 .ref-preview-panel {
   display: grid;
-  gap: 0.75rem;
+  min-height: 18rem;
+  align-content: start;
+  gap: 0.45rem;
+  transition: none !important;
+}
+
+.ref-preview-panel[data-starting-style] {
+  filter: none !important;
+  opacity: 1 !important;
+  translate: 0 0 !important;
+}
+
+.ref-preview-panel[data-ending-style] {
+  display: none !important;
 }
 
 .ref-preview-progress {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--primary) 16%, var(--border));
+  border-radius: 0.9rem;
+  padding: 0.5rem 0.65rem;
+  background: color-mix(in oklab, var(--primary) 5%, var(--card));
+}
+
+.ref-preview-progress-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--muted-foreground);
-  font-size: 0.7rem;
+  gap: 0.75rem;
 }
 
-.ref-preview-progress strong {
+.ref-preview-progress-heading > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.ref-preview-progress-label {
+  color: var(--muted-foreground);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ref-preview-progress-heading strong {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
   color: var(--foreground);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.ref-preview-progress-heading strong span {
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.ref-preview-progress-percent {
+  color: var(--primary);
   font-family: var(--font-mono);
-  font-size: 0.67rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.ref-preview-progress-note {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 0.58rem;
+  line-height: 1.2;
 }
 
 .ref-preview-bar {
-  height: 0.35rem;
+  height: 0.32rem;
   overflow: hidden;
   border-radius: 99px;
   background: var(--muted);
@@ -467,23 +582,46 @@
 
 .ref-preview-bar span {
   display: block;
-  width: 50%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, var(--primary), var(--cyan));
 }
 
 .ref-preview-task {
-  display: flex;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1.15rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   border: 1px solid var(--border);
-  border-radius: 0.85rem;
-  padding: 0.75rem;
-  background: color-mix(in oklab, var(--background) 48%, transparent);
+  border-radius: 0.8rem;
+  padding: 0.38rem 0.65rem;
+  background: color-mix(in oklab, var(--card) 88%, var(--background));
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.ref-preview-task > span {
+.ref-preview-task:hover,
+.ref-preview-habit:hover {
+  border-color: color-mix(in oklab, var(--primary) 55%, var(--border));
+}
+
+.ref-preview-task:hover {
+  background: color-mix(in oklab, var(--primary) 5%, var(--card));
+}
+
+.ref-preview-task:focus-visible,
+.ref-preview-habit:focus-visible,
+.ref-preview-presets button:focus-visible,
+.ref-preview-timer-start:focus-visible,
+.ref-preview-timer-reset:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.ref-preview-task-check {
   display: grid;
   width: 1.15rem;
   height: 1.15rem;
@@ -494,14 +632,18 @@
   color: var(--primary-foreground);
 }
 
-.ref-preview-task.is-done > span {
+.ref-preview-task.is-done .ref-preview-task-check {
   border-color: var(--primary);
   background: var(--primary);
 }
 
-.ref-preview-task > span svg {
+.ref-preview-task-check svg {
   width: 0.8rem;
   height: 0.8rem;
+}
+
+.ref-preview-task-copy {
+  min-width: 0;
 }
 
 .ref-preview-task strong,
@@ -512,37 +654,147 @@
 .ref-preview-task strong {
   font-size: 0.73rem;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .ref-preview-task small {
-  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--muted-foreground);
   font-size: 0.62rem;
 }
 
-.ref-preview-streak,
+.ref-preview-task.is-done .ref-preview-task-copy > strong {
+  color: var(--muted-foreground);
+}
+
+.ref-preview-task-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 99px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.53rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ref-preview-task-status.is-done {
+  background: color-mix(in oklab, var(--primary) 12%, var(--card));
+  color: var(--primary);
+}
+
+.ref-preview-task-status.is-next {
+  background: color-mix(in oklab, var(--primary) 15%, var(--card));
+  color: var(--primary);
+}
+
+.ref-preview-task-status.is-later {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.ref-preview-habits {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ref-preview-habit-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--muted-foreground);
+  font-size: 0.65rem;
+}
+
+.ref-preview-habit-summary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ref-preview-habit-summary svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: var(--gold);
+}
+
+.ref-preview-habit-summary strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.ref-preview-habit {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.6rem;
+  background: color-mix(in oklab, var(--background) 48%, transparent);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ref-preview-habit-check {
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+}
+
+.ref-preview-habit-check svg {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+.ref-preview-habit.is-done .ref-preview-habit-check {
+  border-color: var(--gold);
+  background: color-mix(in oklab, var(--gold) 80%, var(--background));
+  color: var(--background);
+}
+
+.ref-preview-habit-copy strong,
+.ref-preview-habit-copy small {
+  display: block;
+}
+
+.ref-preview-habit-copy strong {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.ref-preview-habit-copy small,
+.ref-preview-habit-action {
+  color: var(--muted-foreground);
+  font-size: 0.58rem;
+}
+
+.ref-preview-habit-action {
+  white-space: nowrap;
+}
+
 .ref-preview-focus {
   display: grid;
   justify-items: center;
   gap: 0.6rem;
-  padding: 0.8rem 0;
+  padding: 0.2rem 0;
   text-align: center;
 }
 
-.ref-preview-streak > svg {
-  width: 2rem;
-  height: 2rem;
-  color: var(--gold);
-}
-
-.ref-preview-streak strong,
 .ref-preview-focus strong {
   font-family: var(--font-display);
   font-size: 1.25rem;
   letter-spacing: -0.03em;
 }
 
-.ref-preview-streak span,
 .ref-preview-focus p,
 .ref-preview-caption {
   margin: 0;
@@ -550,26 +802,86 @@
   font-size: 0.72rem;
 }
 
-.ref-preview-week {
-  display: flex;
-  justify-content: center;
-  gap: 0.45rem;
+.ref-preview-focus .ref-preview-clock {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
-.ref-preview-week span {
-  display: grid;
-  width: 1.9rem;
-  height: 1.9rem;
-  place-items: center;
-  border-radius: 50%;
+.ref-preview-focus-progress {
+  width: min(100%, 14rem);
+  height: 0.3rem;
+  overflow: hidden;
+  border-radius: 99px;
   background: var(--muted);
-  color: var(--muted-foreground);
-  font-size: 0.62rem;
 }
 
-.ref-preview-week span.is-complete {
-  background: color-mix(in oklab, var(--gold) 19%, var(--card));
-  color: var(--gold);
+.ref-preview-focus-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--cyan));
+  transition: width calc(250ms * var(--kf-speed, 1)) ease-out;
+}
+
+.ref-preview-presets,
+.ref-preview-timer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.ref-preview-presets button,
+.ref-preview-timer-start,
+.ref-preview-timer-reset {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  padding: 0.35rem 0.65rem;
+  background: color-mix(in oklab, var(--background) 55%, transparent);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+
+.ref-preview-presets button[aria-pressed="true"] {
+  border-color: color-mix(in oklab, var(--primary) 55%, var(--border));
+  background: color-mix(in oklab, var(--primary) 14%, var(--card));
+  color: var(--foreground);
+}
+
+.ref-preview-presets button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ref-preview-timer-start {
+  border-color: transparent;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+.ref-preview-timer-start svg,
+.ref-preview-timer-reset svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.ref-preview-timer-reset {
+  width: 2rem;
+  padding: 0;
+}
+
+.ref-preview-focus p {
+  max-width: 18rem;
+  text-align: center;
 }
 
 .ref-preview-focus > span {
@@ -594,17 +906,24 @@
   color: var(--primary);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .ref-preview-focus-progress span {
+    transition: none;
+  }
+}
+
 .ref-preview-foot {
-  position: absolute;
-  right: 1.35rem;
-  bottom: 1.1rem;
-  left: 1.35rem;
+  position: static;
   display: flex;
+  width: 100%;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
   color: var(--muted-foreground);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
 }
 
 .ref-preview-foot span:first-child {
@@ -1419,7 +1738,7 @@
     border-radius: 1.5rem;
   }
   .ref-preview-panels {
-    min-height: 14rem;
+    min-height: 18rem;
   }
   .ref-proof-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

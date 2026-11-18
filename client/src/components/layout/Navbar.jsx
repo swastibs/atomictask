@@ -25,28 +25,40 @@ export default function Navbar() {
 
   useEffect(() => {
     const nav = navRef.current;
-    if (!nav) return;
+    if (!nav?.parentElement) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updateShrink = () => {
+    const updateWidth = () => {
+      const parent = nav.parentElement;
+      const parentStyle = window.getComputedStyle(parent);
+      const availableWidth =
+        parent.clientWidth -
+        Number.parseFloat(parentStyle.paddingLeft) -
+        Number.parseFloat(parentStyle.paddingRight);
+      const rootFontSize = Number.parseFloat(
+        window.getComputedStyle(document.documentElement).fontSize,
+      );
+      const fullWidth = Math.min(availableWidth, 68 * rootFontSize);
+      const minWidth = fullWidth * 0.92;
       const maxScrollY = Math.max(
         1,
         document.documentElement.scrollHeight - window.innerHeight,
       );
-      const progress = Math.min(1, Math.max(0, window.scrollY / maxScrollY));
-      const maxShrink = Math.min(32, window.innerWidth * 0.025);
-      const shrink = reducedMotion.matches ? 0 : progress * maxShrink;
-      nav.style.setProperty("--nav-shrink", `${shrink}px`);
+      const scrollProgress = Math.min(1, Math.max(0, window.scrollY / maxScrollY));
+      const progress = reducedMotion.matches ? 0 : scrollProgress;
+      const width = fullWidth - progress * (fullWidth - minWidth);
+      nav.style.setProperty("--nav-width", `${width}px`);
+      nav.style.setProperty("--nav-min-width", `${minWidth}px`);
     };
 
-    updateShrink();
-    window.addEventListener("scroll", updateShrink, { passive: true });
-    window.addEventListener("resize", updateShrink);
-    reducedMotion.addEventListener("change", updateShrink);
+    updateWidth();
+    window.addEventListener("scroll", updateWidth, { passive: true });
+    window.addEventListener("resize", updateWidth);
+    reducedMotion.addEventListener("change", updateWidth);
     return () => {
-      window.removeEventListener("scroll", updateShrink);
-      window.removeEventListener("resize", updateShrink);
-      reducedMotion.removeEventListener("change", updateShrink);
+      window.removeEventListener("scroll", updateWidth);
+      window.removeEventListener("resize", updateWidth);
+      reducedMotion.removeEventListener("change", updateWidth);
     };
   }, []);
 
